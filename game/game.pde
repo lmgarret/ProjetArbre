@@ -4,10 +4,14 @@ float rotX = 0;
 float rotZ = 0;
 float speed = 1.0;
 
+Mover mover;
+float gravityConstant = 1;
+
 
 void setup(){
   size(900, 900, P3D);
   noStroke();
+  mover = new Mover();
 }
 
 void draw(){
@@ -19,7 +23,11 @@ void draw(){
   rotateX(rotX);
   rotateY(rotY);
   rotateZ(rotZ);
-
+  
+  mover.update();
+  mover.checkEdges();
+  mover.display();
+  
   box(300, 20, 300);
 }
 
@@ -59,5 +67,48 @@ void mouseWheel(MouseEvent event) {
   }
   if(speed<=0){
     speed = 0.05;
+  }
+}
+class Mover {
+  PVector location;
+  PVector velocity;
+  PVector gravity;
+  float rSphere = 10;
+  Mover() {
+    location = new PVector(0, 20, 0);
+    velocity = new PVector(2, 0, 2);
+    gravity = new PVector(1,0,1);
+  }
+  void update() {
+    gravity.x = sin(rotZ) * gravityConstant;
+    gravity.z = sin(rotX) * gravityConstant;
+    
+    float normalForce = 1;
+    float mu = 0.201;
+    float frictionMagnitude = normalForce * mu;
+    PVector friction = velocity.get();
+    friction.mult(-1);
+    friction.normalize();
+    friction.mult(frictionMagnitude);
+
+    velocity.add(gravity);
+    velocity.add(friction);
+    location.add(velocity);
+  }
+  void display() {
+    pushMatrix();
+    translate(location.x,-location.y, -location.z);
+    sphere(rSphere);
+    popMatrix();
+  }
+  void checkEdges() {
+   if ((location.x > 150) ||(location.x < -150)) {
+      velocity.x = velocity.x*-1;
+      location.x = 150*Math.abs(location.x)/location.x;
+    }
+    if ((location.z > 150) ||(location.z < -150)) {
+      velocity.z = velocity.z*-1;
+      location.z = 150*Math.abs(location.z)/location.z;
+    }
   }
 }
