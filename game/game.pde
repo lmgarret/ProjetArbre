@@ -4,83 +4,49 @@ float rotX = 0;
 float rotZ = 0;
 float speed = 1.0;
 int mode = 0; //0 = normal, 1 = SHIFT-MODE
-
-int oRotX=0;
-int oRotY=0;
-int oRotZ=0;
+int boxHeight = 20;
 
 Mover mover;
 float gravityConstant = 1;
-
-float cylBS=50;
-float cylH=50 -  depth;
-int cylRes=40;
-
-PShape openCylinder = new PShape();
-
+Cylinder cylinder = new Cylinder();
+ArrayList<Cylinder> cylList = new ArrayList<Cylinder>();
 
 void setup(){
   size(900, 900, P3D);
   noStroke();
   mover = new Mover();
+  cylinder.init();
 }
 
 void draw(){
-if(mode==0){
-camera(width/2, height/2-400, depth, 0, 0, 0, 0, 1, 0);
- directionalLight(50, 100, 125, 0, 1, 0);
+  directionalLight(50, 100, 125, 0, 1, 0);
   ambientLight(102, 102, 102);
   background(200);
-  rotateX(rotX);
-  rotateY(rotY);
-  rotateZ(rotZ);
   
-  mover.update();
-  mover.checkEdges();
-  mover.display();
+  if(mode==0){
+    camera(width/2, height/2-400, depth, 0, 0, 0, 0, 1, 0);
+    pushMatrix();
+    rotateX(rotX);
+    rotateY(rotY);
+    rotateZ(rotZ);
   
-  box(300, 20, 300);
-}else{
-  pushMatrix();
-    float angle;
-  float[] x = new float[cylRes+1];
-  float[] y = new float[cylRes+1];
-  
-  for(int i = 0; i<x.length;i++){
-   angle= (TWO_PI/cylRes)*i;
-   x[i] = sin(angle)*cylBS;
-   y[i] = cos(angle)*cylBS;
-  }
-   openCylinder = createShape();
-   openCylinder.beginShape(TRIANGLE_FAN);
-   
-   for(int i = 0; i<x.length;i++){   
-     openCylinder.vertex(x[i],y[i],0);
-     openCylinder.vertex(x[i],y[i], cylH);
-     openCylinder.vertex(0, 0,cylH); 
-     
-   }
-   openCylinder.endShape();
-   openCylinder = createShape();
-   openCylinder.beginShape(TRIANGLE_FAN);
-   openCylinder.vertex(0, 0, cylH);
-   for(int i =0; i<x.length;i++){
-     openCylinder.vertex(x[i],y[i], cylH);
-   }
-   openCylinder.endShape();
-   openCylinder.beginShape(TRIANGLE_FAN);
-   openCylinder.vertex(0, 0, 0);
-   for(int i =0; i<x.length;i++){
-     openCylinder.vertex(x[i],y[i], 0);
-   }
-   openCylinder.endShape();
-   background(255);
-  translate(mouseX,mouseY,0);
-  shape(openCylinder);
-  popMatrix();
+    mover.update();
+    mover.checkEdges();
+    mover.display();
+    
+    translate(0, boxHeight,0);
+    box(300, boxHeight, 300);
+    popMatrix();
+  }else{
+    camera(0, -depth, 0, 0, 0, 0, 0, 0, 1);
+    translate(0, boxHeight,0);
+    box(300, boxHeight, 300);
+    cylinder.display();
+    for(Cylinder c : cylList){
+     c.display(); 
+    }
   }
 }
-
 void keyPressed() {
   if (key == CODED) {
     if(keyCode == SHIFT){
@@ -104,23 +70,28 @@ void keyReleased(){
 
 void mouseClicked(){
  if(mode==1){
-   
+   cylinder.fixPosition();
+   cylList.add(cylinder);
+   cylinder=new Cylinder();
+   cylinder.init();
  }
 }
 void mouseDragged() 
 {
-  rotX = map(mouseX, 0, width, -PI/3, PI/3)*speed;
-  rotZ = map(mouseY, 0, height, -PI/3, PI/3)*speed;
-  
-  if(rotX > PI/3){
-     rotX = PI/3; 
-  }else if(rotX < -PI/3){
-     rotX = -PI/3;
-  }
-  if(rotZ > PI/3){
-     rotZ = PI/3; 
-  }else if(rotZ < -PI/3){
-     rotZ = -PI/3;
+  if(mode == 0){
+    rotX = map(mouseX, 0, width, -PI/3, PI/3)*speed;
+    rotZ = map(mouseY, 0, height, -PI/3, PI/3)*speed;
+    
+    if(rotX > PI/3){
+       rotX = PI/3; 
+    }else if(rotX < -PI/3){
+       rotX = -PI/3;
+    }
+    if(rotZ > PI/3){
+       rotZ = PI/3; 
+    }else if(rotZ < -PI/3){
+       rotZ = -PI/3;
+    }
   }
 }
 void mouseWheel(MouseEvent event) {
@@ -134,13 +105,75 @@ void mouseWheel(MouseEvent event) {
     speed = 0.05;
   }
 }
+class Cylinder{
+ PVector position = new PVector(0,0,0);
+ boolean fixedPosition =false;
+ float cylBS=50;
+ float cylH=350-depth;
+ int cylRes=40;
+ PShape openCylinder = new PShape();
+ PShape roof = new PShape();
+
+ 
+ void init(){
+   float angle=0;
+   float[] x = new float[cylRes + 1];
+   float[] y = new float[cylRes + 1];
+  
+   //get the x and y position on a circle for all the sides
+   for(int i = 0; i < x.length; i++){
+    angle = (TWO_PI / cylRes) * i;
+    x[i] = sin(angle) * cylBS;
+    y[i] = cos(angle) * cylBS;
+   }
+   openCylinder = createShape();
+   openCylinder.beginShape(QUAD_STRIP);
+   
+   //draw the border of the cylinder
+   for(int i = 0; i < x.length; i++) {
+    openCylinder.vertex(x[i], y[i] , 0);
+    openCylinder.vertex(x[i], y[i], cylH);
+   }
+   openCylinder.endShape();
+   
+   roof = createShape();
+   roof.beginShape(TRIANGLE_FAN);
+   for(int i =0; i<x.length;i++){
+     roof.vertex(x[i],y[i], cylH);
+   }
+   roof.endShape();
+   roof.beginShape(TRIANGLE_FAN);
+   for(int i =0; i<x.length;i++){
+     roof.vertex(x[i],y[i], 0);
+   }
+   roof.endShape();
+}
+void fixPosition(){
+   fixedPosition = true;
+   position.x = width/2-mouseX;
+   position.y = height/2-mouseY;
+}
+void display(){
+  pushMatrix();
+  translate(0,-depth,0);
+  rotateX(PI/2.0);  
+  if(fixedPosition){
+    translate(-position.x, -position.y, -(cylH+depth-boxHeight));
+  }else{
+    translate(-width/2+mouseX,-height/2+mouseY,-(cylH+depth-boxHeight));
+  }
+  shape(openCylinder);
+  shape(roof);
+  popMatrix();
+}
+}
 class Mover {
   PVector location;
   PVector velocity;
   PVector gravity;
   float rSphere = 10;
   Mover() {
-    location = new PVector(0, 20, 0);
+    location = new PVector(0, 0, 0);
     velocity = new PVector(2, 0, 2);
     gravity = new PVector(1,0,1);
   }
