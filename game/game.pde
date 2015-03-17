@@ -42,9 +42,9 @@ void draw(){
     translate(0, boxHeight,0);
     box(300, boxHeight, 300);
     cylinder.display();
-    for(Cylinder c : cylList){
+  }
+  for(Cylinder c : cylList){
      c.display(); 
-    }
   }
 }
 void keyPressed() {
@@ -108,8 +108,8 @@ void mouseWheel(MouseEvent event) {
 class Cylinder{
  PVector position = new PVector(0,0,0);
  boolean fixedPosition =false;
- float cylBS=50;
- float cylH=350-depth;
+ float cylBS=10;
+ float cylH=30;
  int cylRes=40;
  PShape openCylinder = new PShape();
  PShape roof = new PShape();
@@ -155,15 +155,26 @@ void fixPosition(){
 }
 void display(){
   pushMatrix();
-  translate(0,-depth,0);
-  rotateX(PI/2.0);  
-  if(fixedPosition){
-    translate(-position.x, -position.y, -(cylH+depth-boxHeight));
+  if(mode == 0){
+    rotateX(rotX);
+    rotateY(rotY);
+    rotateZ(rotZ);
+    
+    rotateX(PI/2.0);
+    translate(-position.x, -position.y, -boxHeight/2);
+    shape(openCylinder);
+    shape(roof);
+    
   }else{
-    translate(-width/2+mouseX,-height/2+mouseY,-(cylH+depth-boxHeight));
+    rotateX(PI/2.0);  
+    if(fixedPosition){
+      translate(-position.x, -position.y, boxHeight/2);
+    }else{
+      translate(-width/2+mouseX,-height/2+mouseY,boxHeight/2);
+    }
+    shape(openCylinder);
+    shape(roof);
   }
-  shape(openCylinder);
-  shape(roof);
   popMatrix();
 }
 }
@@ -207,6 +218,11 @@ class Mover {
     if ((location.z > 150) ||(location.z < -150)) {
       velocity.z = velocity.z*-1;
       location.z = 150*Math.abs(location.z)/location.z;
+    }
+  }
+  void checkCylinderCollision(){
+    for(Cylinder c : cylList){
+     
     }
   }
 }
