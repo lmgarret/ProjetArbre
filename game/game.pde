@@ -5,6 +5,7 @@ float rotZ = 0;
 float speed = 1.0;
 int mode = 0; //0 = normal, 1 = SHIFT-MODE
 int boxHeight = 20;
+int changelight=0;
 
 Mover mover;
 float gravityConstant = 1;
@@ -20,7 +21,11 @@ void setup(){
 
 void draw(){
   directionalLight(50, 100, 125, 0, 1, 0);
-  ambientLight(102, 102, 102);
+  if(changelight==0){
+  ambientLight(12, 102, 102);
+  }else{
+      ambientLight(102, 102, 102);
+  }
   background(200);
   
   if(mode==0){
@@ -58,9 +63,15 @@ void keyPressed() {
     } else if (keyCode == RIGHT) {
       rotY += PI*speed/128;
     }
-  } else {
-     
+  } else if(keyCode == TAB){
+     if(changelight==0){
+       changelight=1;
+     }else{
+       changelight=0;
+     }
+  }else{
   }
+  
 }
 void keyReleased(){
    if(key==CODED){
