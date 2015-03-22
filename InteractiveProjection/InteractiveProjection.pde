@@ -1,5 +1,6 @@
 float depth =2000;
 
+
 void setup() {
   size(500,500,P3D); 
   noStroke();
@@ -15,6 +16,7 @@ void draw() {
   float ry = map(mouseX ,0 ,width,0,PI);
   rotateZ(rz);
   rotateY(ry);
+  
   for(int x =-2 ; x <=2 ;x++) {
     for(int y = -2 ; y<= 2 ;y++) {
       for (int z = -2;z <= 2;z++) {
@@ -30,10 +32,11 @@ void draw() {
 void keyPressed() {
   if (key==CODED) {
     if(keyCode == UP) {
-      depth-=50;
+      //ry +=PI/8;
     }
     else if(keyCode == DOWN) {
-      depth+= 50;
+      //ry -=PI/8;
     }
+   
   }
 }
