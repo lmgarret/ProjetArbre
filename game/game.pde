@@ -152,8 +152,8 @@ class Cylinder{
 }
 void fixPosition(){
    fixedPosition = true;
-   position.x = (width/2-mouseX);
-   position.y = height/2-mouseY;
+   position.x = 540*(width/2-mouseX)/width;
+   position.y = 540*(height/2-mouseY)/height;
 }
 void display(){
   pushMatrix();
