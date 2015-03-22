@@ -200,7 +200,7 @@ class Mover {
     friction.mult(-1);
     friction.normalize();
     friction.mult(frictionMagnitude);
-
+    checkCylinderCollision();
     velocity.add(gravity);
     velocity.add(friction);
     location.add(velocity);
@@ -233,4 +233,6 @@ class Mover {
       velocity.sub(n);
     }
   }
+  }
 }
+
