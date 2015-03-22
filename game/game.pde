@@ -24,7 +24,7 @@ void draw(){
   background(200);
   
   if(mode==0){
-    camera(width/2, height/2-400, depth, 0, 0, 0, 0, 1, 0);
+    camera(width/2, height/2-800, depth, 0, 0, 0, 0, 1, 0);
     pushMatrix();
     rotateX(rotX);
     rotateY(rotY);
@@ -38,6 +38,7 @@ void draw(){
     box(300, boxHeight, 300);
     popMatrix();
   }else{
+
     camera(0, -depth, 0, 0, 0, 0, 0, 0, 1);
     translate(0, boxHeight,0);
     box(300, boxHeight, 300);
@@ -151,7 +152,7 @@ class Cylinder{
 }
 void fixPosition(){
    fixedPosition = true;
-   position.x = width/2-mouseX;
+   position.x = (width/2-mouseX);
    position.y = height/2-mouseY;
 }
 void display(){
@@ -171,7 +172,7 @@ void display(){
     if(fixedPosition){
       translate(-position.x, -position.y, boxHeight/2);
     }else{
-      translate(-width/2+mouseX,-height/2+mouseY,boxHeight/2);
+      translate(540*(-width/2+mouseX)/width,540*(-height/2+mouseY)/height,boxHeight/2);
     }
     shape(openCylinder);
     shape(roof);
@@ -203,7 +204,7 @@ class Mover {
     checkCylinderCollision();
     velocity.add(gravity);
     velocity.add(friction);
-    location.add(velocity);
+   location.add(velocity);
   }
   void display() {
     pushMatrix();
@@ -231,6 +232,7 @@ class Mover {
        n.normalize();  
        n.mult(2*(velocity.dot(n)));
       velocity.sub(n);
+      location.add(velocity);
     }
   }
   }
