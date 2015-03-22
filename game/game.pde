@@ -6,6 +6,9 @@ float speed = 1.0;
 int mode = 0; //0 = normal, 1 = SHIFT-MODE
 int boxHeight = 20;
 int changelight=1;
+float lightX=102;
+float lightY=102;
+float lightZ=102;
 
 Mover mover;
 float gravityConstant = 1;
@@ -22,14 +25,14 @@ void setup(){
 void draw(){
   directionalLight(50, 100, 125, 0, 1, 0);
   if(changelight==0){
-  ambientLight(15, 255, 25);
+  ambientLight(lightX, lightY, lightZ);
   }else{
       ambientLight(102, 102, 102);
   }
   background(200);
   
   if(mode==0){
-    camera(width/2, height/2-400, depth, 0, 0, 0, 0, 1, 0);
+    camera(width/2, height/2-1200, depth, 0, 0, 0, 0, 1, 0);
     pushMatrix();
     rotateX(rotX);
     rotateY(rotY);
@@ -225,10 +228,20 @@ class Mover {
   }
   void checkEdges() {
    if ((location.x > 150) ||(location.x < -150)) {
+      if(changelight==0){
+        lightX=(float)Math.abs(Math.floor(Math.random()*255));
+        lightY=(float)Math.abs(Math.floor(Math.random()*255));
+        lightZ=(float)Math.abs(Math.floor(Math.random()*255));
+      }
       velocity.x = velocity.x*-1;
       location.x = 150*Math.abs(location.x)/location.x;
     }
     if ((location.z > 150) ||(location.z < -150)) {
+      if(changelight==0){
+        lightX=(float)Math.abs(Math.floor(Math.random()*255));
+        lightY=(float)Math.abs(Math.floor(Math.random()*255));
+        lightZ=(float)Math.abs(Math.floor(Math.random()*255));
+      }
       velocity.z = velocity.z*-1;
       location.z = 150*Math.abs(location.z)/location.z;
     }
@@ -244,6 +257,11 @@ class Mover {
        n.mult(2*(velocity.dot(n)));
       velocity.sub(n);
       location.add(velocity);
+      if(changelight==0){
+        lightX=(float)Math.abs(Math.floor(Math.random()*255));
+        lightY=(float)Math.abs(Math.floor(Math.random()*255));
+        lightZ=(float)Math.abs(Math.floor(Math.random()*255));
+      }
     }
   }
   }
