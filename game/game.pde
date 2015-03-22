@@ -24,7 +24,7 @@ void draw(){
   background(200);
   
   if(mode==0){
-    camera(width/2, height/2-800, depth, 0, 0, 0, 0, 1, 0);
+    camera(width/2, height/2-400, depth, 0, 0, 0, 0, 1, 0);
     pushMatrix();
     rotateX(rotX);
     rotateY(rotY);
