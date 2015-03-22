@@ -5,7 +5,7 @@ float rotZ = 0;
 float speed = 1.0;
 int mode = 0; //0 = normal, 1 = SHIFT-MODE
 int boxHeight = 20;
-int changelight=0;
+int changelight=1;
 
 Mover mover;
 float gravityConstant = 1;
@@ -22,7 +22,7 @@ void setup(){
 void draw(){
   directionalLight(50, 100, 125, 0, 1, 0);
   if(changelight==0){
-  ambientLight(12, 102, 102);
+  ambientLight(15, 255, 25);
   }else{
       ambientLight(102, 102, 102);
   }
