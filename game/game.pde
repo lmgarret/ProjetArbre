@@ -44,6 +44,7 @@ void draw(){
     cylinder.display();
   }
   for(Cylinder c : cylList){
+    if(c.position.y < 150 && c.position.y > -150 && c.position.x < 150 && c.position.x > -150)
      c.display(); 
   }
 }
