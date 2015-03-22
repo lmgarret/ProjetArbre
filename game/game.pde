@@ -8,8 +8,8 @@ int boxHeight = 20;
 
 Mover mover;
 float gravityConstant = 1;
-Cylinder cylinder = new Cylinder();
 ArrayList<Cylinder> cylList = new ArrayList<Cylinder>();
+Cylinder cylinder = new Cylinder();
 
 void setup(){
   size(900, 900, P3D);
