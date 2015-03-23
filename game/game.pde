@@ -23,13 +23,14 @@ void setup(){
 }
 
 void draw(){
-  directionalLight(50, 100, 125, 0, 1, 0);
+  directionalLight(50, 100, 125,0, 1, 0);
   if(changelight==0){
   ambientLight(lightX, lightY, lightZ);
   }else{
       ambientLight(102, 102, 102);
+      background(200);
   }
-  background(200);
+  
   
   if(mode==0){
     camera(width/2, height/2-1200, depth, 0, 0, 0, 0, 1, 0);
@@ -68,6 +69,9 @@ void keyPressed() {
     }
   } else if(keyCode == TAB){
      if(changelight==0){
+       lightX=102;
+       lightY=102;
+       lightZ=102;
        changelight=1;
      }else{
        changelight=0;
@@ -232,6 +236,7 @@ class Mover {
         lightX=(float)Math.abs(Math.floor(Math.random()*255));
         lightY=(float)Math.abs(Math.floor(Math.random()*255));
         lightZ=(float)Math.abs(Math.floor(Math.random()*255));
+          background((int)Math.floor(Math.random()*255),(int)Math.floor(Math.random()*255),(int)Math.floor(Math.random()*255));
       }
       velocity.x = velocity.x*-1;
       location.x = 150*Math.abs(location.x)/location.x;
@@ -241,6 +246,7 @@ class Mover {
         lightX=(float)Math.abs(Math.floor(Math.random()*255));
         lightY=(float)Math.abs(Math.floor(Math.random()*255));
         lightZ=(float)Math.abs(Math.floor(Math.random()*255));
+          background((int)Math.floor(Math.random()*255),(int)Math.floor(Math.random()*255),(int)Math.floor(Math.random()*255));
       }
       velocity.z = velocity.z*-1;
       location.z = 150*Math.abs(location.z)/location.z;
@@ -249,15 +255,20 @@ class Mover {
   void checkCylinderCollision(){
     for(Cylinder c : cylList){
         PVector cRealPosition = new PVector(-c.position.x, 0, c.position.y);
-    //   System.out.println("c.position : "+ cRealPosition.x+", "+cRealPosition.z+". c.falseposition : "+c.position.x+", "+c.position.y+". ballPosition : "+location.x+", "+location.y+", "+location.z+".");
+    //  System.out.println("c.position : "+ cRealPosition.x+", "+cRealPosition.z+". c.falseposition : "+c.position.x+", "+c.position.y+". ballPosition : "+location.x+", "+location.y+", "+location.z+".");
       if(location.dist(cRealPosition)<rSphere+c.cylBS){
-     //   System.out.println("this is working" + location.dist(cRealPosition));
+     // System.out.println("this is working" + location.dist(cRealPosition));
       PVector n = new PVector(location.x - cRealPosition.x, 0, location.z - cRealPosition.z);
        n.normalize();  
        n.mult(2*(velocity.dot(n)));
       velocity.sub(n);
+      if(velocity.x<1 && velocity.z<1){
+        velocity.mult(1.1);
+      }
       location.add(velocity);
+
       if(changelight==0){
+          background((int)Math.floor(Math.random()*255),(int)Math.floor(Math.random()*255),(int)Math.floor(Math.random()*255));
         lightX=(float)Math.abs(Math.floor(Math.random()*255));
         lightY=(float)Math.abs(Math.floor(Math.random()*255));
         lightZ=(float)Math.abs(Math.floor(Math.random()*255));
