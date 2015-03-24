@@ -14,6 +14,7 @@ Cylinder cylinder = new Cylinder();
 PGraphics bgDataVisu;
 
 int userPoints;
+int bestScore;
 
 void setup(){
   size(900, 900, P3D);
@@ -36,10 +37,18 @@ void drawSurfaces(){
       bgDataVisu.ellipse((boxWidth/2 - c.position.x)/2 +10, (boxWidth/2 - c.position.y)/2 +10, c.cylBS, c.cylBS);
     }
   }
+  bgDataVisu.text("Total Score : \n"+userPoints+
+  "\n\nVelocity :\n"+Math.round(Math.sqrt(Math.pow(mover.velocity.x,2)+Math.pow(mover.velocity.z,2)))+
+  "\n\nBest Score:"+bestScore,
+  20 + boxWidth/2, 20);
+  
   bgDataVisu.endDraw();
 }
 
 void draw(){
+  if(bestScore<userPoints){
+  bestScore=userPoints;
+  }
   background(200);
   pushMatrix();
     directionalLight(50, 100, 125, 0, 1, 0);
