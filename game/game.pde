@@ -8,6 +8,7 @@ import ddf.minim.effects.*;
 Minim minim;
 AudioPlayer playerBounce;
 AudioPlayer soundtrack;
+AudioPlayer soundtrackLight;
 AudioPlayer playerGodlike; 
 AudioPlayer playerGamePaused;
 AudioPlayer playerGameResumed;
@@ -46,6 +47,7 @@ void setup(){
   minim = new Minim(this);
   playerBounce = minim.loadFile("data/Audio/Sounds/bouce.mp3");
   soundtrack = minim.loadFile("data/Audio/Musics/soundtrack.mp3");
+  soundtrackLight = minim.loadFile("data/Audio/Musics/soundtrackLightOn.mp3");
   playerGodlike = minim.loadFile("data/Audio/Sounds/godlike.mp3");
   playerGamePaused =minim.loadFile("data/Audio/Sounds/gamePaused.mp3");
   playerGameResumed =minim.loadFile("data/Audio/Sounds/gameResumed.mp3");
@@ -84,7 +86,7 @@ void draw(){
   }
   
   if(mode==0){
-   if(!soundtrack.isPlaying()){
+   if(!soundtrack.isPlaying() && changelight!=0){
      soundtrack.play();
    }
     gameGraphics.camera(width/2, height/2-700, depth, 0, 0, 0, 0, 1, 0);
@@ -191,8 +193,12 @@ void keyPressed() {
        lightY=102;
        lightZ=102;
        changelight=1;
+       soundtrackLight.rewind();
+       soundtrack.play();
      }else{
        changelight=0;
+       soundtrack.pause();
+       soundtrackLight.play();
      }
   }else{
   }
