@@ -71,7 +71,7 @@ void draw(){
   if(bestScore<userPoints){
     bestScore=userPoints;
   }
-  if(newPoints>18){
+  if(newPoints>15){
     playerGodlike.play();
     playerGodlike.rewind();
   }
@@ -188,12 +188,13 @@ void keyPressed() {
     } else if (keyCode == RIGHT) {
       rotY += PI*speed/128;
     }
-  } else if(keyCode == TAB){
+  } else if(keyCode == TAB && mode==0){
      if(changelight==0){
        lightX=102;
        lightY=102;
        lightZ=102;
        changelight=1;
+       soundtrackLight.pause();
        soundtrackLight.rewind();
        soundtrack.play();
      }else{
