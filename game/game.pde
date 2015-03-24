@@ -1,4 +1,4 @@
-import ddf.minim.spi.*;
+  import ddf.minim.spi.*;
 import ddf.minim.signals.*;
 import ddf.minim.*;
 import ddf.minim.analysis.*;
@@ -216,7 +216,9 @@ void keyReleased(){
      }else{
        soundtrackLight.play();
     }
-   } 
+   } else if (keyCode == ALT) {
+     cylList.clear();
+}
 }
 }
 
