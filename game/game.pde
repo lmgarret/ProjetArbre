@@ -20,6 +20,7 @@ void setup(){
   noStroke();
   mover = new Mover();
   cylinder.init();
+  userPoints=0;
   bgDataVisu = createGraphics(width,height/5,P2D);
 }
 
@@ -39,7 +40,6 @@ void drawSurfaces(){
 }
 
 void draw(){
-
   background(200);
   pushMatrix();
     directionalLight(50, 100, 125, 0, 1, 0);
