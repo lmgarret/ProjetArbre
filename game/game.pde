@@ -5,24 +5,37 @@ float rotZ = 0;
 float speed = 1.0;
 int mode = 0; //0 = normal, 1 = SHIFT-MODE
 int boxHeight = 20;
+int boxWidth = 300;
 
 Mover mover;
 float gravityConstant = 1;
 ArrayList<Cylinder> cylList = new ArrayList<Cylinder>();
 Cylinder cylinder = new Cylinder();
+PGraphics bgDataVisu;
+
 
 void setup(){
   size(900, 900, P3D);
   noStroke();
   mover = new Mover();
   cylinder.init();
+  bgDataVisu = createGraphics(width,height/5,P2D);
+}
+
+void drawSurfaces(){
+  bgDataVisu.beginDraw();
+  bgDataVisu.background(0);
+  bgDataVisu.rect(10,10,boxWidth/2,boxWidth/2);
+  bgDataVisu.ellipse((150+mover.location.x)/2 + 10,(150+mover.location.z)/2 + 10,mover.rSphere/2,mover.rSphere/2);
+  System.out.println("mover : " + mover.location.x+ ", "+ mover.location.y);
+  bgDataVisu.endDraw();
 }
 
 void draw(){
   directionalLight(50, 100, 125, 0, 1, 0);
   ambientLight(102, 102, 102);
   background(200);
-  
+  pushMatrix();
   if(mode==0){
     camera(width/2, height/2-400, depth, 0, 0, 0, 0, 1, 0);
     pushMatrix();
@@ -48,6 +61,9 @@ void draw(){
     if(c.position.y < 150 && c.position.y > -150 && c.position.x < 150 && c.position.x > -150)
      c.display(); 
   }
+  popMatrix();
+  drawSurfaces();
+  image(bgDataVisu,0,4*height/5);
 }
 void keyPressed() {
   if (key == CODED) {
