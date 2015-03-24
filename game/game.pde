@@ -24,18 +24,25 @@ void setup(){
 
 void drawSurfaces(){
   bgDataVisu.beginDraw();
-  bgDataVisu.background(0);
+  bgDataVisu.background(143,188,143);
   bgDataVisu.rect(10,10,boxWidth/2,boxWidth/2);
-  bgDataVisu.ellipse((150+mover.location.x)/2 + 10,(150+mover.location.z)/2 + 10,mover.rSphere/2,mover.rSphere/2);
-  System.out.println("mover : " + mover.location.x+ ", "+ mover.location.y);
+    bgDataVisu.fill(220,20,60);
+  bgDataVisu.ellipse((boxWidth/2 + mover.location.x)/2 + 10,(boxWidth/2 - mover.location.z)/2 + 10,mover.rSphere,mover.rSphere);
+  bgDataVisu.fill(102,102,102);
+  for(Cylinder c : cylList){
+    if(c.position.y < 150 && c.position.y > -150 && c.position.x < 150 && c.position.x > -150){
+    bgDataVisu.ellipse((boxWidth/2 - c.position.x)/2 +10, (boxWidth/2 - c.position.y)/2 +10, c.cylBS, c.cylBS);
+    }
+  }
   bgDataVisu.endDraw();
 }
 
 void draw(){
-  directionalLight(50, 100, 125, 0, 1, 0);
-  ambientLight(102, 102, 102);
+
   background(200);
   pushMatrix();
+    directionalLight(50, 100, 125, 0, 1, 0);
+  ambientLight(102, 102, 102);
   if(mode==0){
     camera(width/2, height/2-400, depth, 0, 0, 0, 0, 1, 0);
     pushMatrix();
@@ -51,7 +58,6 @@ void draw(){
     box(300, boxHeight, 300);
     popMatrix();
   }else{
-
     camera(0, -depth, 0, 0, 0, 0, 0, 0, 1);
     translate(0, boxHeight,0);
     box(300, boxHeight, 300);
