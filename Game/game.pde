@@ -6,27 +6,17 @@ float speed = 1.0;
 int mode = 0; //0 = normal, 1 = SHIFT-MODE
 int boxHeight = 20;
 int boxWidth = 300;
-<<<<<<< HEAD
-<<<<<<< HEAD
 PGraphics dataBackgroundSurface;
 PGraphics topViewSurface;
 PGraphics gameGraphics;
 
 int userPoints;
 int bestScore;
-=======
->>>>>>> origin/master
-=======
->>>>>>> origin/master
 
 Mover mover;
 float gravityConstant = 1;
 ArrayList<Cylinder> cylList = new ArrayList<Cylinder>();
 Cylinder cylinder = new Cylinder();
-PGraphics bgDataVisu;
-
-int userPoints;
-int bestScore;
 
 void setup(){
   size(900, 900, P3D);
@@ -36,34 +26,10 @@ void setup(){
   topViewSurface = createGraphics(height/5 - 20, height/5 - 20, P2D);
   mover = new Mover();
   cylinder.init();
-  userPoints=0;
-  bgDataVisu = createGraphics(width,height/5,P2D);
-}
-
-void drawSurfaces(){
-  bgDataVisu.beginDraw();
-  bgDataVisu.background(143,188,143);
-  bgDataVisu.rect(10,10,boxWidth/2,boxWidth/2);
-    bgDataVisu.fill(220,20,60);
-  bgDataVisu.ellipse((boxWidth/2 + mover.location.x)/2 + 10,(boxWidth/2 - mover.location.z)/2 + 10,mover.rSphere,mover.rSphere);
-  bgDataVisu.fill(102,102,102);
-  for(Cylinder c : cylList){
-    if(c.position.y < 150 && c.position.y > -150 && c.position.x < 150 && c.position.x > -150){
-      bgDataVisu.ellipse((boxWidth/2 - c.position.x)/2 +10, (boxWidth/2 - c.position.y)/2 +10, c.cylBS, c.cylBS);
-    }
-  }
-  bgDataVisu.text("Total Score : \n"+userPoints+
-  "\n\nVelocity :\n"+Math.round(Math.sqrt(Math.pow(mover.velocity.x,2)+Math.pow(mover.velocity.z,2)))+
-  "\n\nBest Score:"+bestScore,
-  20 + boxWidth/2, 20);
-  
-  bgDataVisu.endDraw();
 }
 
 void draw(){
   if(bestScore<userPoints){
-<<<<<<< HEAD
-<<<<<<< HEAD
     bestScore=userPoints;
   }
   gameGraphics.beginDraw();
@@ -71,19 +37,6 @@ void draw(){
   gameGraphics.background(200);
   gameGraphics.directionalLight(50, 100, 125, 0, 1, 0);
   gameGraphics.ambientLight(102, 102, 102);
-=======
-=======
->>>>>>> origin/master
-  bestScore=userPoints;
-  }
-  background(200);
-  pushMatrix();
-    directionalLight(50, 100, 125, 0, 1, 0);
-  ambientLight(102, 102, 102);
-<<<<<<< HEAD
->>>>>>> origin/master
-=======
->>>>>>> origin/master
   if(mode==0){
     gameGraphics.camera(width/2, height/2-800, depth, 0, 0, 0, 0, 1, 0);
     
@@ -100,21 +53,11 @@ void draw(){
     gameGraphics.box(boxWidth, boxHeight, boxWidth);
     gameGraphics.popMatrix();
   }else{
-<<<<<<< HEAD
-<<<<<<< HEAD
 
     gameGraphics.camera(0, -depth, 0, 0, 0, 0, 0, 0, 1);
     gameGraphics.translate(0, boxHeight,0);
     gameGraphics.box(boxWidth, boxHeight, boxWidth);
     cylinder.display(gameGraphics);
-=======
-=======
->>>>>>> origin/master
-    camera(0, -depth, 0, 0, 0, 0, 0, 0, 1);
-    translate(0, boxHeight,0);
-    box(300, boxHeight, 300);
-    cylinder.display();
->>>>>>> origin/master
   }
   for(Cylinder c : cylList){
     if(c.position.y < boxWidth/2 && c.position.y > -boxWidth/2 && c.position.x < boxWidth/2 && c.position.x > -boxWidth/2)
@@ -149,20 +92,8 @@ void drawTopViewSurface(){
     topViewSurface.fill(255,255,255);
     topViewSurface.ellipse(topViewSurface.width-(c.position.x+boxWidth/2)*factor, topViewSurface.height-(c.position.y+boxWidth/2)*factor, rCyl*2, rCyl*2);
   }
-<<<<<<< HEAD
-<<<<<<< HEAD
   topViewSurface.endDraw();
   image(topViewSurface, 10, height-height/5+10);
-=======
-  popMatrix();
-  drawSurfaces();
-  image(bgDataVisu,0,4*height/5);
->>>>>>> origin/master
-=======
-  popMatrix();
-  drawSurfaces();
-  image(bgDataVisu,0,4*height/5);
->>>>>>> origin/master
 }
 void keyPressed() {
   if (key == CODED) {
@@ -330,48 +261,26 @@ class Mover {
   void checkEdges() {
    if ((location.x > boxWidth/2) ||(location.x < -boxWidth/2)) {
       velocity.x = velocity.x*-1;
-<<<<<<< HEAD
-<<<<<<< HEAD
       userPoints -= Math.round(Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2)));
       location.x = boxWidth/2*Math.abs(location.x)/location.x;
-=======
-=======
->>>>>>> origin/master
-      userPoints -= Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2));
-      location.x = 150*Math.abs(location.x)/location.x;
->>>>>>> origin/master
     }
     if ((location.z > boxWidth/2) ||(location.z < -boxWidth/2)) {
       velocity.z = velocity.z*-1;
-<<<<<<< HEAD
-<<<<<<< HEAD
       userPoints -= Math.round(Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2)));
       location.z = boxWidth/2*Math.abs(location.z)/location.z;
-=======
-=======
->>>>>>> origin/master
-      userPoints -= Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2));
-      location.z = 150*Math.abs(location.z)/location.z;
->>>>>>> origin/master
     }
   }
   void checkCylinderCollision(){
     for(Cylinder c : cylList){
         PVector cRealPosition = new PVector(-c.position.x, 0, c.position.y);
+    //   System.out.println("c.position : "+ cRealPosition.x+", "+cRealPosition.z+". c.falseposition : "+c.position.x+", "+c.position.y+". ballPosition : "+location.x+", "+location.y+", "+location.z+".");
       if(location.dist(cRealPosition)<rSphere+c.cylBS){
+     //   System.out.println("this is working" + location.dist(cRealPosition));
       PVector n = new PVector(location.x - cRealPosition.x, 0, location.z - cRealPosition.z);
        n.normalize();  
        n.mult(2*(velocity.dot(n)));
       velocity.sub(n);
-<<<<<<< HEAD
-<<<<<<< HEAD
       userPoints += Math.round(Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2)));
-=======
-      userPoints += Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2));
->>>>>>> origin/master
-=======
-      userPoints += Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2));
->>>>>>> origin/master
       location.add(velocity);
     }
   }
