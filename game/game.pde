@@ -180,6 +180,7 @@ void keyPressed() {
       playerGamePaused.play();
       playerGameResumed.rewind();
       soundtrack.pause();
+      soundtrackLight.pause();
       }
       mode = 1;
     }if (keyCode == LEFT) {
@@ -209,9 +210,13 @@ void keyReleased(){
      mode=0;
      playerGameResumed.play();
      playerGamePaused.rewind();
-     soundtrack.play();
+     if(changelight==1){
+       soundtrack.play();
+     }else{
+       soundtrackLight.play();
     }
    } 
+}
 }
 
 void mouseClicked(){
@@ -401,9 +406,6 @@ class Mover {
        n.normalize();  
        n.mult(2*(velocity.dot(n)));
       velocity.sub(n);
-      if(velocity.x<1 && velocity.z<1){
-        velocity.mult(1.1);
-      }
       newPoints = (int)Math.round(Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2)));
       userPoints += newPoints;
         playerBounce.play();
