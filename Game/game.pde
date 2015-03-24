@@ -7,12 +7,15 @@ int mode = 0; //0 = normal, 1 = SHIFT-MODE
 int boxHeight = 20;
 int boxWidth = 300;
 <<<<<<< HEAD
+<<<<<<< HEAD
 PGraphics dataBackgroundSurface;
 PGraphics topViewSurface;
 PGraphics gameGraphics;
 
 int userPoints;
 int bestScore;
+=======
+>>>>>>> origin/master
 =======
 >>>>>>> origin/master
 
@@ -60,6 +63,7 @@ void drawSurfaces(){
 void draw(){
   if(bestScore<userPoints){
 <<<<<<< HEAD
+<<<<<<< HEAD
     bestScore=userPoints;
   }
   gameGraphics.beginDraw();
@@ -68,12 +72,17 @@ void draw(){
   gameGraphics.directionalLight(50, 100, 125, 0, 1, 0);
   gameGraphics.ambientLight(102, 102, 102);
 =======
+=======
+>>>>>>> origin/master
   bestScore=userPoints;
   }
   background(200);
   pushMatrix();
     directionalLight(50, 100, 125, 0, 1, 0);
   ambientLight(102, 102, 102);
+<<<<<<< HEAD
+>>>>>>> origin/master
+=======
 >>>>>>> origin/master
   if(mode==0){
     gameGraphics.camera(width/2, height/2-800, depth, 0, 0, 0, 0, 1, 0);
@@ -92,12 +101,15 @@ void draw(){
     gameGraphics.popMatrix();
   }else{
 <<<<<<< HEAD
+<<<<<<< HEAD
 
     gameGraphics.camera(0, -depth, 0, 0, 0, 0, 0, 0, 1);
     gameGraphics.translate(0, boxHeight,0);
     gameGraphics.box(boxWidth, boxHeight, boxWidth);
     cylinder.display(gameGraphics);
 =======
+=======
+>>>>>>> origin/master
     camera(0, -depth, 0, 0, 0, 0, 0, 0, 1);
     translate(0, boxHeight,0);
     box(300, boxHeight, 300);
@@ -138,8 +150,14 @@ void drawTopViewSurface(){
     topViewSurface.ellipse(topViewSurface.width-(c.position.x+boxWidth/2)*factor, topViewSurface.height-(c.position.y+boxWidth/2)*factor, rCyl*2, rCyl*2);
   }
 <<<<<<< HEAD
+<<<<<<< HEAD
   topViewSurface.endDraw();
   image(topViewSurface, 10, height-height/5+10);
+=======
+  popMatrix();
+  drawSurfaces();
+  image(bgDataVisu,0,4*height/5);
+>>>>>>> origin/master
 =======
   popMatrix();
   drawSurfaces();
@@ -313,9 +331,12 @@ class Mover {
    if ((location.x > boxWidth/2) ||(location.x < -boxWidth/2)) {
       velocity.x = velocity.x*-1;
 <<<<<<< HEAD
+<<<<<<< HEAD
       userPoints -= Math.round(Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2)));
       location.x = boxWidth/2*Math.abs(location.x)/location.x;
 =======
+=======
+>>>>>>> origin/master
       userPoints -= Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2));
       location.x = 150*Math.abs(location.x)/location.x;
 >>>>>>> origin/master
@@ -323,9 +344,12 @@ class Mover {
     if ((location.z > boxWidth/2) ||(location.z < -boxWidth/2)) {
       velocity.z = velocity.z*-1;
 <<<<<<< HEAD
+<<<<<<< HEAD
       userPoints -= Math.round(Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2)));
       location.z = boxWidth/2*Math.abs(location.z)/location.z;
 =======
+=======
+>>>>>>> origin/master
       userPoints -= Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2));
       location.z = 150*Math.abs(location.z)/location.z;
 >>>>>>> origin/master
@@ -340,7 +364,11 @@ class Mover {
        n.mult(2*(velocity.dot(n)));
       velocity.sub(n);
 <<<<<<< HEAD
+<<<<<<< HEAD
       userPoints += Math.round(Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2)));
+=======
+      userPoints += Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2));
+>>>>>>> origin/master
 =======
       userPoints += Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2));
 >>>>>>> origin/master
