@@ -218,6 +218,9 @@ void keyReleased(){
     }
    } else if (keyCode == ALT) {
      cylList.clear();
+  topViewSurface.beginDraw();
+  topViewSurface.background(65, 105, 225);
+  topViewSurface.endDraw();
 }
 }
 }
