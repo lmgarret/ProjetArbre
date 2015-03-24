@@ -4,59 +4,129 @@ float rotX = 0;
 float rotZ = 0;
 float speed = 1.0;
 int mode = 0; //0 = normal, 1 = SHIFT-MODE
-int boxHeight = 20;
-int changelight=1;
-float lightX=102;
-float lightY=102;
-float lightZ=102;
+int boxHeight = 10;
+int boxWidth = 300;
+
+PGraphics dataBackgroundSurface;
+PGraphics topViewSurface;
+PGraphics gameGraphics;
+PGraphics scoresSurface;
+PGraphics bartChartSurface;
+
+int userPoints;
+int bestScore;
 
 Mover mover;
 float gravityConstant = 1;
-Cylinder cylinder = new Cylinder();
 ArrayList<Cylinder> cylList = new ArrayList<Cylinder>();
+Cylinder cylinder = new Cylinder();
 
 void setup(){
   size(900, 900, P3D);
   noStroke();
+  gameGraphics = createGraphics(width,height,P3D);
+  dataBackgroundSurface = createGraphics(width, height/5, P2D);
+  topViewSurface = createGraphics(height/5 - 20, height/5 - 20, P2D);
+  scoresSurface = createGraphics(height/8 - 20, height/5 - 20, P2D);
+  bartChartSurface = createGraphics(width-(topViewSurface.width+scoresSurface.width+2*10)-20, height/5 - 20, P2D);
   mover = new Mover();
   cylinder.init();
+  topViewSurface.beginDraw();
+  topViewSurface.background(65, 105, 225);
+  topViewSurface.endDraw();
 }
 
 void draw(){
-  directionalLight(50, 100, 125,0, 1, 0);
-  if(changelight==0){
-  ambientLight(lightX, lightY, lightZ);
-  }else{
-      ambientLight(102, 102, 102);
-      background(200);
+  if(bestScore<userPoints){
+    bestScore=userPoints;
   }
-  
-  
+  gameGraphics.beginDraw();
+  gameGraphics.noStroke();
+  gameGraphics.background(200);
+  gameGraphics.directionalLight(50, 100, 125, 0, 1, 0);
+  gameGraphics.ambientLight(102, 102, 102);
   if(mode==0){
-    camera(width/2, height/2-1200, depth, 0, 0, 0, 0, 1, 0);
-    pushMatrix();
-    rotateX(rotX);
-    rotateY(rotY);
-    rotateZ(rotZ);
+    gameGraphics.camera(width/2, height/2-700, depth, 0, 0, 0, 0, 1, 0);
+    
+    gameGraphics.pushMatrix();
+    gameGraphics.rotateX(rotX);
+    gameGraphics.rotateY(rotY);
+    gameGraphics.rotateZ(rotZ);
   
     mover.update();
     mover.checkEdges();
-    mover.display();
+    mover.display(gameGraphics);
     
-    translate(0, boxHeight,0);
-    box(300, boxHeight, 300);
-    popMatrix();
+    gameGraphics.translate(0, boxHeight,0);
+    gameGraphics.box(boxWidth, boxHeight, boxWidth);
+    gameGraphics.popMatrix();
   }else{
 
-    camera(0, -depth, 0, 0, 0, 0, 0, 0, 1);
-    translate(0, boxHeight,0);
-    box(300, boxHeight, 300);
-    cylinder.display();
+    gameGraphics.camera(0, -depth, 0, 0, 0, 0, 0, 0, 1);
+    gameGraphics.translate(0, boxHeight,0);
+    gameGraphics.box(boxWidth, boxHeight, boxWidth);
+    cylinder.display(gameGraphics);
   }
   for(Cylinder c : cylList){
-    if(c.position.y < 150 && c.position.y > -150 && c.position.x < 150 && c.position.x > -150)
-     c.display(); 
+    if(c.position.y < boxWidth/2 && c.position.y > -boxWidth/2 && c.position.x < boxWidth/2 && c.position.x > -boxWidth/2)
+     c.display(gameGraphics); 
   }
+  gameGraphics.endDraw();
+  image(gameGraphics,0,0);
+  
+  drawDataVizualSurface();
+}
+void drawDataVizualSurface(){
+  dataBackgroundSurface.beginDraw();
+  dataBackgroundSurface.background(190, 180, 140);
+  dataBackgroundSurface.endDraw();
+  image(dataBackgroundSurface, 0, height-height/5);
+
+  drawTopViewSurface();
+  drawScores();
+  drawBarChart();
+}
+void drawTopViewSurface(){
+  topViewSurface.beginDraw();
+  topViewSurface.noStroke();
+  float factor = (topViewSurface.width)/(float)boxWidth;
+  float rEllipse = mover.rSphere*factor;
+  //topViewSurface.fill(255,0,0);
+ // topViewSurface.ellipse((mover.location.x+boxWidth/2)*factor, topViewSurface.height-(mover.location.z+boxWidth/2)*factor, rEllipse*2, rEllipse*2);
+  for(Cylinder c : cylList){
+    float rCyl = c.cylBS*factor;
+    topViewSurface.fill(255,255,255);
+    topViewSurface.ellipse(topViewSurface.width-(c.position.x+boxWidth/2)*factor, topViewSurface.height-(c.position.y+boxWidth/2)*factor, rCyl*2, rCyl*2);
+  }
+  topViewSurface.stroke(0);
+  topViewSurface.fill(175);
+  topViewSurface.ellipse((mover.location.x+boxWidth/2)*factor, topViewSurface.height-(mover.location.z+boxWidth/2)*factor, rEllipse*2, rEllipse*2);
+  topViewSurface.endDraw();
+  image(topViewSurface, 10, height-height/5+10);
+}
+void drawScores(){
+  scoresSurface.beginDraw();
+  scoresSurface.noStroke();
+  scoresSurface.background(200);
+  scoresSurface.fill(190, 180, 140);
+  scoresSurface.rect(5,5,scoresSurface.width-10, scoresSurface.height-10);
+  scoresSurface.fill(100);
+  scoresSurface.text("Total Score : \n"+userPoints+
+  "\n\nVelocity :\n"+Math.round((Math.sqrt(Math.pow(mover.velocity.x,2)+Math.pow(mover.velocity.z,2)))*100.0)/100.0+
+  "\n\nBest Score:\n"+bestScore,
+  10, 20);
+  scoresSurface.endDraw();
+  image(scoresSurface, topViewSurface.width + 20,  height-height/5+10);
+}
+void drawBarChart(){
+  bartChartSurface.beginDraw();
+  bartChartSurface.noStroke();
+  bartChartSurface.background(200);
+  bartChartSurface.fill(190, 180, 140);
+  bartChartSurface.rect(5,5,bartChartSurface.width-10, bartChartSurface.height-10);
+  bartChartSurface.fill(100);
+  bartChartSurface.endDraw();
+  image(bartChartSurface, width-bartChartSurface.width-10,  height-height/5+10);
 }
 void keyPressed() {
   if (key == CODED) {
@@ -67,18 +137,9 @@ void keyPressed() {
     } else if (keyCode == RIGHT) {
       rotY += PI*speed/128;
     }
-  } else if(keyCode == TAB){
-     if(changelight==0){
-       lightX=102;
-       lightY=102;
-       lightZ=102;
-       changelight=1;
-     }else{
-       changelight=0;
-     }
-  }else{
+  } else {
+     
   }
-  
 }
 void keyReleased(){
    if(key==CODED){
@@ -128,8 +189,8 @@ void mouseWheel(MouseEvent event) {
 class Cylinder{
  PVector position = new PVector(0,0,0);
  boolean fixedPosition =false;
- float cylBS=10;
- float cylH=30;
+ float cylBS=25;
+ float cylH=25;
  int cylRes=40;
  PShape openCylinder = new PShape();
  PShape roof = new PShape();
@@ -173,29 +234,29 @@ void fixPosition(){
    position.x = 540*(width/2-mouseX)/width;
    position.y = 540*(height/2-mouseY)/height;
 }
-void display(){
-  pushMatrix();
+void display(PGraphics g){
+  g.pushMatrix();
   if(mode == 0){
-    rotateX(rotX);
-    rotateY(rotY);
-    rotateZ(rotZ);
+    g.rotateX(rotX);
+    g.rotateY(rotY);
+    g.rotateZ(rotZ);
     
-    rotateX(PI/2.0);
-    translate(-position.x, -position.y, -boxHeight/2);
-    shape(openCylinder);
-    shape(roof);
+    g.rotateX(PI/2.0);
+    g.translate(-position.x, -position.y, -boxHeight/2);
+    g.shape(openCylinder);
+    g.shape(roof);
     
   }else{
-    rotateX(PI/2.0);  
+    g.rotateX(PI/2.0);  
     if(fixedPosition){
-      translate(-position.x, -position.y, boxHeight/2);
+      g.translate(-position.x, -position.y, boxHeight/2);
     }else{
-      translate(540*(-width/2+mouseX)/width,540*(-height/2+mouseY)/height,boxHeight/2);
+      g.translate(540*(-width/2+mouseX)/width,540*(-height/2+mouseY)/height,boxHeight/2);
     }
-    shape(openCylinder);
-    shape(roof);
+    g.shape(openCylinder);
+    g.shape(roof);
   }
-  popMatrix();
+  g.popMatrix();
 }
 }
 class Mover {
@@ -204,7 +265,7 @@ class Mover {
   PVector gravity;
   float rSphere = 10;
   Mover() {
-    location = new PVector(0, 0, 0);
+    location = new PVector(0, -rSphere/2, 0);
     velocity = new PVector(2, 0, 2);
     gravity = new PVector(1,0,1);
   }
@@ -222,57 +283,38 @@ class Mover {
     checkCylinderCollision();
     velocity.add(gravity);
     velocity.add(friction);
-   location.add(velocity);
+    location.add(velocity);
   }
-  void display() {
-    pushMatrix();
-    translate(location.x,-location.y, -location.z);
-    sphere(rSphere);
-    popMatrix();
+  void display(PGraphics g) {
+    g.pushMatrix();
+    g.translate(location.x,location.y, -location.z);
+    g.sphere(rSphere);
+    g.popMatrix();
   }
   void checkEdges() {
-   if ((location.x > 150) ||(location.x < -150)) {
-      if(changelight==0){
-        lightX=(float)Math.abs(Math.floor(Math.random()*255));
-        lightY=(float)Math.abs(Math.floor(Math.random()*255));
-        lightZ=(float)Math.abs(Math.floor(Math.random()*255));
-          background((int)Math.floor(Math.random()*255),(int)Math.floor(Math.random()*255),(int)Math.floor(Math.random()*255));
-      }
+   if ((location.x > boxWidth/2) ||(location.x < -boxWidth/2)) {
       velocity.x = velocity.x*-1;
-      location.x = 150*Math.abs(location.x)/location.x;
+      userPoints -= Math.round(Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2)));
+      location.x = boxWidth/2*Math.abs(location.x)/location.x;
     }
-    if ((location.z > 150) ||(location.z < -150)) {
-      if(changelight==0){
-        lightX=(float)Math.abs(Math.floor(Math.random()*255));
-        lightY=(float)Math.abs(Math.floor(Math.random()*255));
-        lightZ=(float)Math.abs(Math.floor(Math.random()*255));
-          background((int)Math.floor(Math.random()*255),(int)Math.floor(Math.random()*255),(int)Math.floor(Math.random()*255));
-      }
+    if ((location.z > boxWidth/2) ||(location.z < -boxWidth/2)) {
       velocity.z = velocity.z*-1;
-      location.z = 150*Math.abs(location.z)/location.z;
+      userPoints -= Math.round(Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2)));
+      location.z = boxWidth/2*Math.abs(location.z)/location.z;
     }
   }
   void checkCylinderCollision(){
     for(Cylinder c : cylList){
         PVector cRealPosition = new PVector(-c.position.x, 0, c.position.y);
-    //  System.out.println("c.position : "+ cRealPosition.x+", "+cRealPosition.z+". c.falseposition : "+c.position.x+", "+c.position.y+". ballPosition : "+location.x+", "+location.y+", "+location.z+".");
+    //   System.out.println("c.position : "+ cRealPosition.x+", "+cRealPosition.z+". c.falseposition : "+c.position.x+", "+c.position.y+". ballPosition : "+location.x+", "+location.y+", "+location.z+".");
       if(location.dist(cRealPosition)<rSphere+c.cylBS){
-     // System.out.println("this is working" + location.dist(cRealPosition));
+     //   System.out.println("this is working" + location.dist(cRealPosition));
       PVector n = new PVector(location.x - cRealPosition.x, 0, location.z - cRealPosition.z);
        n.normalize();  
        n.mult(2*(velocity.dot(n)));
       velocity.sub(n);
-      if(velocity.x<1 && velocity.z<1){
-        velocity.mult(1.1);
-      }
+      userPoints += Math.round(Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2)));
       location.add(velocity);
-
-      if(changelight==0){
-          background((int)Math.floor(Math.random()*255),(int)Math.floor(Math.random()*255),(int)Math.floor(Math.random()*255));
-        lightX=(float)Math.abs(Math.floor(Math.random()*255));
-        lightY=(float)Math.abs(Math.floor(Math.random()*255));
-        lightZ=(float)Math.abs(Math.floor(Math.random()*255));
-      }
     }
   }
   }
