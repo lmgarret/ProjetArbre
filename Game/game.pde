@@ -4,12 +4,14 @@ float rotX = 0;
 float rotZ = 0;
 float speed = 1.0;
 int mode = 0; //0 = normal, 1 = SHIFT-MODE
-int boxHeight = 20;
+int boxHeight = 10;
 int boxWidth = 300;
+
 PGraphics dataBackgroundSurface;
 PGraphics topViewSurface;
 PGraphics gameGraphics;
 PGraphics scoresSurface;
+PGraphics bartChartSurface;
 
 int userPoints;
 int bestScore;
@@ -22,10 +24,11 @@ Cylinder cylinder = new Cylinder();
 void setup(){
   size(900, 900, P3D);
   noStroke();
-  gameGraphics = createGraphics(900,900,P3D);
+  gameGraphics = createGraphics(width,height,P3D);
   dataBackgroundSurface = createGraphics(width, height/5, P2D);
   topViewSurface = createGraphics(height/5 - 20, height/5 - 20, P2D);
   scoresSurface = createGraphics(height/8 - 20, height/5 - 20, P2D);
+  bartChartSurface = createGraphics(width-(topViewSurface.width+scoresSurface.width+2*10)-20, height/5 - 20, P2D);
   mover = new Mover();
   cylinder.init();
 }
@@ -40,7 +43,7 @@ void draw(){
   gameGraphics.directionalLight(50, 100, 125, 0, 1, 0);
   gameGraphics.ambientLight(102, 102, 102);
   if(mode==0){
-    gameGraphics.camera(width/2, height/2-800, depth, 0, 0, 0, 0, 1, 0);
+    gameGraphics.camera(width/2, height/2-700, depth, 0, 0, 0, 0, 1, 0);
     
     gameGraphics.pushMatrix();
     gameGraphics.rotateX(rotX);
@@ -72,12 +75,13 @@ void draw(){
 }
 void drawDataVizualSurface(){
   dataBackgroundSurface.beginDraw();
-  dataBackgroundSurface.background(250, 250, 210);
+  dataBackgroundSurface.background(190, 180, 140);
   dataBackgroundSurface.endDraw();
   image(dataBackgroundSurface, 0, height-height/5);
 
   drawTopViewSurface();
   drawScores();
+  drawBarChart();
 }
 void drawTopViewSurface(){
   topViewSurface.beginDraw();
@@ -98,15 +102,25 @@ void drawScores(){
   scoresSurface.beginDraw();
   scoresSurface.noStroke();
   scoresSurface.background(200);
-  scoresSurface.fill(250,250,210);
+  scoresSurface.fill(190, 180, 140);
   scoresSurface.rect(5,5,scoresSurface.width-10, scoresSurface.height-10);
   scoresSurface.fill(100);
   scoresSurface.text("Total Score : \n"+userPoints+
-  "\n\nVelocity :\n"+Math.round(Math.sqrt(Math.pow(mover.velocity.x,2)+Math.pow(mover.velocity.z,2)))+
+  "\n\nVelocity :\n"+Math.round((Math.sqrt(Math.pow(mover.velocity.x,2)+Math.pow(mover.velocity.z,2)))*100.0)/100.0+
   "\n\nBest Score:\n"+bestScore,
   10, 20);
   scoresSurface.endDraw();
   image(scoresSurface, topViewSurface.width + 20,  height-height/5+10);
+}
+void drawBarChart(){
+  bartChartSurface.beginDraw();
+  bartChartSurface.noStroke();
+  bartChartSurface.background(200);
+  bartChartSurface.fill(190, 180, 140);
+  bartChartSurface.rect(5,5,bartChartSurface.width-10, bartChartSurface.height-10);
+  bartChartSurface.fill(100);
+  bartChartSurface.endDraw();
+  image(bartChartSurface, width-bartChartSurface.width-10,  height-height/5+10);
 }
 void keyPressed() {
   if (key == CODED) {
@@ -169,8 +183,8 @@ void mouseWheel(MouseEvent event) {
 class Cylinder{
  PVector position = new PVector(0,0,0);
  boolean fixedPosition =false;
- float cylBS=10;
- float cylH=30;
+ float cylBS=25;
+ float cylH=25;
  int cylRes=40;
  PShape openCylinder = new PShape();
  PShape roof = new PShape();
@@ -245,7 +259,7 @@ class Mover {
   PVector gravity;
   float rSphere = 10;
   Mover() {
-    location = new PVector(0, 0, 0);
+    location = new PVector(0, -rSphere/2, 0);
     velocity = new PVector(2, 0, 2);
     gravity = new PVector(1,0,1);
   }
@@ -267,7 +281,7 @@ class Mover {
   }
   void display(PGraphics g) {
     g.pushMatrix();
-    g.translate(location.x,-location.y, -location.z);
+    g.translate(location.x,location.y, -location.z);
     g.sphere(rSphere);
     g.popMatrix();
   }
