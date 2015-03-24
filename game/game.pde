@@ -68,6 +68,15 @@ void setup(){
 }
 
 void draw(){
+       if (keyPressed) {
+         if(key =='R' || key =='r') {
+     cylList.clear();
+  topViewSurface.beginDraw();
+  topViewSurface.background(65, 105, 225);
+  topViewSurface.endDraw();
+      }
+       }
+  
   if(bestScore<userPoints){
     bestScore=userPoints;
   }
@@ -216,11 +225,7 @@ void keyReleased(){
      }else{
        soundtrackLight.play();
     }
-   } else if (keyCode == ALT) {
-     cylList.clear();
-  topViewSurface.beginDraw();
-  topViewSurface.background(65, 105, 225);
-  topViewSurface.endDraw();
+ 
 }
 }
 }
