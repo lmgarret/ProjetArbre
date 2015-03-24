@@ -10,8 +10,8 @@ float lightX=102;
 float lightY=102;
 float lightZ=102;
 
-Mover mover;
 float gravityConstant = 1;
+Mover mover;
 Cylinder cylinder = new Cylinder();
 ArrayList<Cylinder> cylList = new ArrayList<Cylinder>();
 
