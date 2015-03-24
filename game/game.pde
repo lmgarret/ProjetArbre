@@ -12,6 +12,7 @@ float gravityConstant = 1;
 ArrayList<Cylinder> cylList = new ArrayList<Cylinder>();
 Cylinder cylinder = new Cylinder();
 PGraphics bgDataVisu;
+PGraphics barChart;
 
 int userPoints;
 int bestScore;
@@ -23,6 +24,7 @@ void setup(){
   cylinder.init();
   userPoints=0;
   bgDataVisu = createGraphics(width,height/5,P2D);
+  barChart = createGraphics(wid
 }
 
 void drawSurfaces(){
@@ -247,12 +249,12 @@ class Mover {
   void checkEdges() {
    if ((location.x > 150) ||(location.x < -150)) {
       velocity.x = velocity.x*-1;
-      userPoints -= Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2));
+      userPoints -= Math.round(Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2)));
       location.x = 150*Math.abs(location.x)/location.x;
     }
     if ((location.z > 150) ||(location.z < -150)) {
       velocity.z = velocity.z*-1;
-      userPoints -= Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2));
+      userPoints -= Math.round(Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2)));
       location.z = 150*Math.abs(location.z)/location.z;
     }
   }
@@ -264,7 +266,7 @@ class Mover {
        n.normalize();  
        n.mult(2*(velocity.dot(n)));
       velocity.sub(n);
-      userPoints += Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2));
+      userPoints += Math.round(Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2)));
       location.add(velocity);
     }
   }
