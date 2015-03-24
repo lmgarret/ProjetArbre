@@ -13,6 +13,7 @@ ArrayList<Cylinder> cylList = new ArrayList<Cylinder>();
 Cylinder cylinder = new Cylinder();
 PGraphics bgDataVisu;
 
+int userPoints;
 
 void setup(){
   size(900, 900, P3D);
@@ -31,7 +32,7 @@ void drawSurfaces(){
   bgDataVisu.fill(102,102,102);
   for(Cylinder c : cylList){
     if(c.position.y < 150 && c.position.y > -150 && c.position.x < 150 && c.position.x > -150){
-    bgDataVisu.ellipse((boxWidth/2 - c.position.x)/2 +10, (boxWidth/2 - c.position.y)/2 +10, c.cylBS, c.cylBS);
+      bgDataVisu.ellipse((boxWidth/2 - c.position.x)/2 +10, (boxWidth/2 - c.position.y)/2 +10, c.cylBS, c.cylBS);
     }
   }
   bgDataVisu.endDraw();
@@ -237,23 +238,24 @@ class Mover {
   void checkEdges() {
    if ((location.x > 150) ||(location.x < -150)) {
       velocity.x = velocity.x*-1;
+      userPoints -= Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2));
       location.x = 150*Math.abs(location.x)/location.x;
     }
     if ((location.z > 150) ||(location.z < -150)) {
       velocity.z = velocity.z*-1;
+      userPoints -= Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2));
       location.z = 150*Math.abs(location.z)/location.z;
     }
   }
   void checkCylinderCollision(){
     for(Cylinder c : cylList){
         PVector cRealPosition = new PVector(-c.position.x, 0, c.position.y);
-    //   System.out.println("c.position : "+ cRealPosition.x+", "+cRealPosition.z+". c.falseposition : "+c.position.x+", "+c.position.y+". ballPosition : "+location.x+", "+location.y+", "+location.z+".");
       if(location.dist(cRealPosition)<rSphere+c.cylBS){
-     //   System.out.println("this is working" + location.dist(cRealPosition));
       PVector n = new PVector(location.x - cRealPosition.x, 0, location.z - cRealPosition.z);
        n.normalize();  
        n.mult(2*(velocity.dot(n)));
       velocity.sub(n);
+      userPoints += Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2));
       location.add(velocity);
     }
   }
