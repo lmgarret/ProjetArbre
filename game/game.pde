@@ -1,3 +1,19 @@
+import ddf.minim.spi.*;
+import ddf.minim.signals.*;
+import ddf.minim.*;
+import ddf.minim.analysis.*;
+import ddf.minim.ugens.*;
+import ddf.minim.effects.*;
+
+Minim minim;
+AudioPlayer playerBounce;
+AudioPlayer soundtrack;
+AudioPlayer playerGodlike; 
+AudioPlayer playerGamePaused;
+AudioPlayer playerGameResumed;
+AudioPlayer playerWrongLocation;
+AudioPlayer playerAddComplete;
+
 int depth = 450;
 float rotY = 0;
 float rotX = 0;
@@ -10,6 +26,7 @@ float lightY=102;
 float lightZ=102;
 int boxHeight = 10;
 int boxWidth = 300;
+int newPoints=0;
 
 PGraphics dataBackgroundSurface;
 PGraphics topViewSurface;
@@ -26,6 +43,14 @@ Cylinder cylinder = new Cylinder();
 ArrayList<Cylinder> cylList = new ArrayList<Cylinder>();
 
 void setup(){
+  minim = new Minim(this);
+  playerBounce = minim.loadFile("data/Audio/Sounds/bouce.mp3");
+  soundtrack = minim.loadFile("data/Audio/Musics/soundtrack.mp3");
+  playerGodlike = minim.loadFile("data/Audio/Sounds/godlike.mp3");
+  playerGamePaused =minim.loadFile("data/Audio/Sounds/gamePaused.mp3");
+  playerGameResumed =minim.loadFile("data/Audio/Sounds/gameResumed.mp3");
+  playerWrongLocation= minim.loadFile("data/Audio/Sounds/wrongLocation.mp3");
+  playerAddComplete =minim.loadFile("data/Audio/Sounds/addonComplete.mp3");
   size(900, 900, P3D);
   noStroke();
   gameGraphics = createGraphics(width,height,P3D);
@@ -44,6 +69,10 @@ void draw(){
   if(bestScore<userPoints){
     bestScore=userPoints;
   }
+  if(newPoints>18){
+    playerGodlike.play();
+    playerGodlike.rewind();
+  }
   gameGraphics.beginDraw();
   gameGraphics.noStroke();
   gameGraphics.directionalLight(50, 100, 125, 0, 1, 0);
@@ -55,6 +84,9 @@ void draw(){
   }
   
   if(mode==0){
+   if(!soundtrack.isPlaying()){
+     soundtrack.play();
+   }
     gameGraphics.camera(width/2, height/2-700, depth, 0, 0, 0, 0, 1, 0);
     
     gameGraphics.pushMatrix();
@@ -77,9 +109,11 @@ void draw(){
     cylinder.display(gameGraphics);
   }
   for(Cylinder c : cylList){
-if(c.position.y < boxWidth/2 && c.position.y > -boxWidth/2 && c.position.x < boxWidth/2 && c.position.x > -boxWidth/2)
+  if(c.position.y < boxWidth/2 && c.position.y > -boxWidth/2 && c.position.x < boxWidth/2 && c.position.x > -boxWidth/2){
      c.display(gameGraphics); 
+    }
   }
+
   gameGraphics.endDraw();
   image(gameGraphics,0,0);
   
@@ -140,6 +174,11 @@ void drawBarChart(){
 void keyPressed() {
   if (key == CODED) {
     if(keyCode == SHIFT){
+      if(mode==0){
+      playerGamePaused.play();
+      playerGameResumed.rewind();
+      soundtrack.pause();
+      }
       mode = 1;
     }if (keyCode == LEFT) {
       rotY -= PI*speed/128;
@@ -162,6 +201,9 @@ void keyReleased(){
    if(key==CODED){
     if(keyCode == SHIFT){
      mode=0;
+     playerGameResumed.play();
+     playerGamePaused.rewind();
+     soundtrack.play();
     }
    } 
 }
@@ -250,6 +292,13 @@ void fixPosition(){
    fixedPosition = true;
    position.x = 540*(width/2-mouseX)/width;
    position.y = 540*(height/2-mouseY)/height;
+   if(position.x>boxWidth/2 || position.x<-boxWidth/2 || position.y>boxWidth/2 || position.y<-boxWidth/2){
+     playerWrongLocation.play();
+     playerWrongLocation.rewind();
+   }else{
+     playerAddComplete.play();
+     playerAddComplete.rewind();
+   }
 }
 void display(PGraphics g){
   g.pushMatrix();
@@ -317,7 +366,10 @@ class Mover {
           background((int)Math.floor(Math.random()*255),(int)Math.floor(Math.random()*255),(int)Math.floor(Math.random()*255));
       }
       velocity.x = velocity.x*-1;
-      userPoints -= Math.round(Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2)));
+      newPoints=-(int)Math.round(Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2)));
+      userPoints += newPoints;
+      playerBounce.play();
+      playerBounce.rewind();
       location.x = boxWidth/2*Math.abs(location.x)/location.x;
     }
     if ((location.z > boxWidth/2) ||(location.z < -boxWidth/2)) {
@@ -328,7 +380,10 @@ class Mover {
           background((int)Math.floor(Math.random()*255),(int)Math.floor(Math.random()*255),(int)Math.floor(Math.random()*255));
       }
       velocity.z = velocity.z*-1;
-      userPoints -= Math.round(Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2)));
+      newPoints=-(int)Math.round(Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2)));
+      userPoints += newPoints;
+        playerBounce.play();
+        playerBounce.rewind();
       location.z = boxWidth/2*Math.abs(location.z)/location.z;
     }
   }
@@ -343,7 +398,10 @@ class Mover {
       if(velocity.x<1 && velocity.z<1){
         velocity.mult(1.1);
       }
-      userPoints += Math.round(Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2)));
+      newPoints = (int)Math.round(Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2)));
+      userPoints += newPoints;
+        playerBounce.play();
+        playerBounce.rewind();
       location.add(velocity);
 
       if(changelight==0){
