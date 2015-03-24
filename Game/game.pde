@@ -9,6 +9,7 @@ int boxWidth = 300;
 PGraphics dataBackgroundSurface;
 PGraphics topViewSurface;
 PGraphics gameGraphics;
+PGraphics scoresSurface;
 
 int userPoints;
 int bestScore;
@@ -24,6 +25,7 @@ void setup(){
   gameGraphics = createGraphics(900,900,P3D);
   dataBackgroundSurface = createGraphics(width, height/5, P2D);
   topViewSurface = createGraphics(height/5 - 20, height/5 - 20, P2D);
+  scoresSurface = createGraphics(height/8 - 20, height/5 - 20, P2D);
   mover = new Mover();
   cylinder.init();
 }
@@ -71,14 +73,11 @@ void draw(){
 void drawDataVizualSurface(){
   dataBackgroundSurface.beginDraw();
   dataBackgroundSurface.background(250, 250, 210);
-  image(dataBackgroundSurface, 0, height-height/5);
-  dataBackgroundSurface.fill(0);
-  dataBackgroundSurface.text("Total Score : \n"+userPoints+
-  "\n\nVelocity :\n"+Math.round(Math.sqrt(Math.pow(mover.velocity.x,2)+Math.pow(mover.velocity.z,2)))+
-  "\n\nBest Score:\n"+bestScore,
-  30 + boxWidth/2, 30);
   dataBackgroundSurface.endDraw();
-    drawTopViewSurface();
+  image(dataBackgroundSurface, 0, height-height/5);
+
+  drawTopViewSurface();
+  drawScores();
 }
 void drawTopViewSurface(){
   topViewSurface.beginDraw();
@@ -94,6 +93,20 @@ void drawTopViewSurface(){
   }
   topViewSurface.endDraw();
   image(topViewSurface, 10, height-height/5+10);
+}
+void drawScores(){
+  scoresSurface.beginDraw();
+  scoresSurface.noStroke();
+  scoresSurface.background(200);
+  scoresSurface.fill(250,250,210);
+  scoresSurface.rect(5,5,scoresSurface.width-10, scoresSurface.height-10);
+  scoresSurface.fill(100);
+  scoresSurface.text("Total Score : \n"+userPoints+
+  "\n\nVelocity :\n"+Math.round(Math.sqrt(Math.pow(mover.velocity.x,2)+Math.pow(mover.velocity.z,2)))+
+  "\n\nBest Score:\n"+bestScore,
+  10, 20);
+  scoresSurface.endDraw();
+  image(scoresSurface, topViewSurface.width + 20,  height-height/5+10);
 }
 void keyPressed() {
   if (key == CODED) {
