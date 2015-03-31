@@ -54,7 +54,7 @@ void display(PGraphics g){
     g.rotateZ(rotZ);
     
     g.rotateX(PI);
-    g.translate(-position.x, -position.y, -boxHeight/2);
+    g.translate(-position.x, -boxHeight/2, position.y);
     g.scale(0.2);
     g.shape(tree);
 
@@ -63,9 +63,9 @@ void display(PGraphics g){
   }else{
     g.rotateX(PI);  
     if(fixedPosition){
-      g.translate(-position.x, -position.y, boxHeight/2);
+      g.translate(-position.x, boxHeight/2, position.y);
     }else{
-      g.translate(540*(-width/2+mouseX)/width,540*(-height/2+mouseY)/height,boxHeight/2);
+      g.translate(540*(-width/2+mouseX)/width,boxHeight/2,-540*(-height/2+mouseY)/height);
     }
       g.scale(0.2);
     g.shape(tree);
