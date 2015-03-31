@@ -1,0 +1,22 @@
+# Blender MTL File: 'tree 4.blend'
+# Material Count: 2
+
+newmtl Feuillage
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.097157 0.147575 0.012514
+Ks 0.020833 0.020833 0.020833
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd foliage.jpg
+
+newmtl Tronc
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.092696 0.045297 0.020005
+Ks 0.010000 0.009893 0.009576
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd trunk.jpg
