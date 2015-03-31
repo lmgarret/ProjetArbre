@@ -55,8 +55,8 @@ void display(PGraphics g){
     
     g.rotateX(PI/2.0);
     g.translate(-position.x, -position.y, -boxHeight/2);
-    g.shape(openCylinder);
-    g.shape(roof);
+    g.shape(tree);
+   // g.shape(roof);
     
   }else{
     g.rotateX(PI/2.0);  
@@ -65,8 +65,8 @@ void display(PGraphics g){
     }else{
       g.translate(540*(-width/2+mouseX)/width,540*(-height/2+mouseY)/height,boxHeight/2);
     }
-    g.shape(openCylinder);
-    g.shape(roof);
+    g.shape(tree);
+  //  g.shape(roof);
   }
   g.popMatrix();
 }
