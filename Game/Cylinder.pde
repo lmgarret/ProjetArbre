@@ -53,19 +53,23 @@ void display(PGraphics g){
     g.rotateY(rotY);
     g.rotateZ(rotZ);
     
-    g.rotateX(PI/2.0);
+    g.rotateX(PI);
     g.translate(-position.x, -position.y, -boxHeight/2);
+    g.scale(0.2);
     g.shape(tree);
+
    // g.shape(roof);
     
   }else{
-    g.rotateX(PI/2.0);  
+    g.rotateX(PI);  
     if(fixedPosition){
       g.translate(-position.x, -position.y, boxHeight/2);
     }else{
       g.translate(540*(-width/2+mouseX)/width,540*(-height/2+mouseY)/height,boxHeight/2);
     }
+      g.scale(0.2);
     g.shape(tree);
+  
   //  g.shape(roof);
   }
   g.popMatrix();
