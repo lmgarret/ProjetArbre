@@ -26,8 +26,8 @@ PShape tree;
 void setup(){
   size(900, 900, P3D);
   noStroke();
-  tree = loadShape("data/3DModels/Obj/tree.obj");
-  tree.scale(8);
+  tree = loadShape("data/3DModels/Obj/tree_no_tex.obj");
+  tree.scale(6);
   gameGraphics = createGraphics(width,height,P3D);
   dataBackgroundSurface = createGraphics(width, height/5, P2D);
   topViewSurface = createGraphics(height/5 - 20, height/5 - 20, P2D);
