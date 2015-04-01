@@ -51,11 +51,11 @@ void drawBarChart(){
   bartChartSurface.fill(190, 180, 140);
   bartChartSurface.rect(5,5,bartChartSurface.width-10, bartChartSurface.height-10);
   bartChartSurface.fill(100); //useless?
-  if(oldScore.size()*(squareSize+espace)>bartChartSurface.width){
+  while((oldScore.size())*(squareSize+espace)>=bartChartSurface.width){
     oldScore.remove(0);
   }
   for(int i=0; i<oldScore.size();i++){
-   drawLine(i, oldScore.get(i), squareSize, espace);
+   drawLine(i, oldScore.get(oldScore.size()-1-i), squareSize, espace);
   }
   
   bartChartSurface.endDraw();
@@ -63,16 +63,13 @@ void drawBarChart(){
 }
 
 void drawLine(final int index, final int score, final int squareSize, final int espace){
-  int max = (int)(Math.min(score, bartChartSurface.height))/(squareSize+espace);
+  int max = (score * bartChartSurface.height / (bestScore+1))/(squareSize+espace);
   if(max<0){
     max=0;
   }
   for(int i=0; i<max; i++){
-     drawSquare(bartChartSurface.width-5- (index+1)*(squareSize+espace), bartChartSurface.height-5- (i+1)*(squareSize+espace), squareSize); 
+     bartChartSurface.fill(100);
+      bartChartSurface.rect(bartChartSurface.width-5- (index+1)*(squareSize+espace), bartChartSurface.height-5- (i+1)*(squareSize+espace), squareSize, squareSize); 
   }
 }
 
-void drawSquare(int iX, int iY, final int squareSize){
-  bartChartSurface.fill(100);
- bartChartSurface.rect(iX,iY,squareSize, squareSize); 
-}
