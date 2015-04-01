@@ -34,11 +34,13 @@ class Mover {
    if ((location.x > boxWidth/2) ||(location.x < -boxWidth/2)) {
       velocity.x = velocity.x*-1;
       userPoints -= Math.round(Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2)));
+      oldScore.add(userPoints);
       location.x = boxWidth/2*Math.abs(location.x)/location.x;
     }
     if ((location.z > boxWidth/2) ||(location.z < -boxWidth/2)) {
       velocity.z = velocity.z*-1;
       userPoints -= Math.round(Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2)));
+      oldScore.add(userPoints);
       location.z = boxWidth/2*Math.abs(location.z)/location.z;
     }
   }
@@ -53,6 +55,7 @@ class Mover {
        n.mult(2*(velocity.dot(n)));
       velocity.sub(n);
       userPoints += Math.round(Math.sqrt(Math.pow(velocity.x,2)+Math.pow(velocity.z,2)));
+      oldScore.add(userPoints);
       location.add(velocity);
     }
   }
