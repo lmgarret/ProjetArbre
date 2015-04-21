@@ -11,7 +11,8 @@ public class Week8_3 extends PApplet{
     size(800,600);
     thresholdBarDown = new HScrollbar(0,580,800,20);
     thresholdBarUp = new HScrollbar(0,555,800,20);
-    img = loadImage("board1.jpg");
+    img = loadImage("board3.jpg");
+   // result = img;
     result = convolute(img);
 
        // noLoop();
@@ -45,8 +46,9 @@ public class Week8_3 extends PApplet{
  
  PImage result = createImage(img.width, img.height, ALPHA);
 int N = 3;
-  for(int x=1; x<width-1; x++){
-    for(int y=1; y<height-1; y++){
+
+  for(int x=1; x<img.width-1; x++){
+    for(int y=1; y<img.height-1; y++){
       double newValue = 0;
       for(int a=-N/2;a<N/2;a++){
         for(int b=-N/2;b<N/2;b++){
@@ -54,8 +56,7 @@ int N = 3;
         }
       }
       newValue = newValue/weight;
-      System.out.println(newValue);
-      result.pixels[y*img.width + x] = (int)newValue;
+      result.pixels[y*img.width + x] = color((int)newValue);
     }
   }
   return result;
