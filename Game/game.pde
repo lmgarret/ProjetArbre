@@ -24,10 +24,10 @@ Cylinder cylinder = new Cylinder();
 PShape tree;
 
 void setup(){
-  size(900, 900, P3D);
+  size(700, 700, P3D);
   noStroke();
-  tree = loadShape("data/3DModels/Obj/tree.obj");
-  tree.scale(40);
+  tree = loadShape("data/3DModels/Obj/tree_no_tex.obj");
+  tree.scale(6);
   gameGraphics = createGraphics(width,height,P3D);
   dataBackgroundSurface = createGraphics(width, height/5, P2D);
   topViewSurface = createGraphics(height/5 - 20, height/5 - 20, P2D);
@@ -77,53 +77,5 @@ void draw(){
   
   drawDataVizualSurface();
 }
-void drawDataVizualSurface(){
-  dataBackgroundSurface.beginDraw();
-  dataBackgroundSurface.background(190, 180, 140);
-  dataBackgroundSurface.endDraw();
-  image(dataBackgroundSurface, 0, height-height/5);
 
-  drawTopViewSurface();
-  drawScores();
-  drawBarChart();
-}
-void drawTopViewSurface(){
-  topViewSurface.beginDraw();
-  topViewSurface.background(65, 105, 225);
-  float factor = (topViewSurface.width)/(float)boxWidth;
-  float rEllipse = mover.rSphere*factor;
-  topViewSurface.fill(255,0,0);
-  topViewSurface.ellipse((mover.location.x+boxWidth/2)*factor, topViewSurface.height-(mover.location.z+boxWidth/2)*factor, rEllipse*2, rEllipse*2);
-  for(Cylinder c : cylList){
-    float rCyl = c.cylBS*factor;
-    topViewSurface.fill(255,255,255);
-    topViewSurface.ellipse(topViewSurface.width-(c.position.x+boxWidth/2)*factor, topViewSurface.height-(c.position.y+boxWidth/2)*factor, rCyl*2, rCyl*2);
-  }
-  topViewSurface.endDraw();
-  image(topViewSurface, 10, height-height/5+10);
-}
-void drawScores(){
-  scoresSurface.beginDraw();
-  scoresSurface.noStroke();
-  scoresSurface.background(200);
-  scoresSurface.fill(190, 180, 140);
-  scoresSurface.rect(5,5,scoresSurface.width-10, scoresSurface.height-10);
-  scoresSurface.fill(100);
-  scoresSurface.text("Total Score : \n"+userPoints+
-  "\n\nVelocity :\n"+Math.round((Math.sqrt(Math.pow(mover.velocity.x,2)+Math.pow(mover.velocity.z,2)))*100.0)/100.0+
-  "\n\nBest Score:\n"+bestScore,
-  10, 20);
-  scoresSurface.endDraw();
-  image(scoresSurface, topViewSurface.width + 20,  height-height/5+10);
-}
-void drawBarChart(){
-  bartChartSurface.beginDraw();
-  bartChartSurface.noStroke();
-  bartChartSurface.background(200);
-  bartChartSurface.fill(190, 180, 140);
-  bartChartSurface.rect(5,5,bartChartSurface.width-10, bartChartSurface.height-10);
-  bartChartSurface.fill(100);
-  bartChartSurface.endDraw();
-  image(bartChartSurface, width-bartChartSurface.width-10,  height-height/5+10);
-}
 

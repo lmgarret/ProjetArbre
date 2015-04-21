@@ -55,7 +55,6 @@ void display(PGraphics g){
     
     g.rotateX(PI);
     g.translate(-position.x, -boxHeight/2, position.y);
-    g.scale(0.2);
     g.shape(tree);
 
    // g.shape(roof);
@@ -67,7 +66,6 @@ void display(PGraphics g){
     }else{
       g.translate(540*(-width/2+mouseX)/width,boxHeight/2,-540*(-height/2+mouseY)/height);
     }
-      g.scale(0.2);
     g.shape(tree);
   
   //  g.shape(roof);
