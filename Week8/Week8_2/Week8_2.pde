@@ -1,6 +1,7 @@
 import processing.core.PApplet;
 import processing.core.PImage;
 
+
 public class Week8_2 extends PApplet{
   HScrollbar thresholdBar;
   PImage img;
@@ -9,26 +10,28 @@ public class Week8_2 extends PApplet{
     size(800,600);
     thresholdBar = new HScrollbar(0,580,800,20);
     img = loadImage("board1.jpg");
-    result = createImage(width, height, RGB);
-    for(int i=0; i<img.width*img.height;i++){
-       if(brightness(img.pixels[i])>128){
-          result.pixels[i]=color(255,255,255);
-       }else{
-         result.pixels[i]=color(0,0,0);
-    }
-    }
-   // noLoop();
+    result = img;
+       // noLoop();
   }
   
   public void draw(){
     image(result,0,0);
     thresholdBar.display();
     thresholdBar.update();
-    println(thresholdBar.getPos());
+    re();
   }
-}
-
- class HScrollbar {
+  public void re(){
+        result = createImage(width, height, RGB);
+    for(int i=0; i<img.width*img.height;i++){
+       if(brightness(img.pixels[i])>thresholdBar.getPos()*255){
+          result.pixels[i]=color(255,255,255);
+       }else{
+         result.pixels[i]=color(0,0,0);
+    }
+    }
+   }
+  
+  class HScrollbar {
   float barWidth;  //Bar's width in pixels
   float barHeight; //Bar's height in pixels
   float xPosition;  //Bar's x position in pixels
@@ -138,3 +141,7 @@ public class Week8_2 extends PApplet{
   }
 }
 
+  
+}
+
+ 
