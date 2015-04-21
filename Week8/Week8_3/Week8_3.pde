@@ -12,7 +12,8 @@ public class Week8_3 extends PApplet{
     thresholdBarDown = new HScrollbar(0,580,800,20);
     thresholdBarUp = new HScrollbar(0,555,800,20);
     img = loadImage("board1.jpg");
-    result = img;
+    result = convolute(img);
+
        // noLoop();
   }
   
@@ -22,7 +23,7 @@ public class Week8_3 extends PApplet{
     thresholdBarDown.update();
     thresholdBarUp.display();
     thresholdBarUp.update();
-    re();
+   // re();
   }
   public void re(){
         result = createImage(width, height, RGB);
@@ -34,6 +35,31 @@ public class Week8_3 extends PApplet{
     }
     }
    }
+   
+ public PImage convolute(PImage img){
+ float[][] kernel = {{0,0,0},
+                     {0,2,0},
+                    {0,0,0}};
+                   
+  float weight = 1.f;
+ 
+ PImage result = createImage(img.width, img.height, ALPHA);
+int N = 3;
+  for(int x=1; x<width-1; x++){
+    for(int y=1; y<height-1; y++){
+      double newValue = 0;
+      for(int a=-N/2;a<N/2;a++){
+        for(int b=-N/2;b<N/2;b++){
+         newValue += brightness(img.pixels[(x+a)+(y+b)*img.width])*kernel[a+N/2][b+N/2];  
+        }
+      }
+      newValue = newValue/weight;
+      System.out.println(newValue);
+      result.pixels[y*img.width + x] = (int)newValue;
+    }
+  }
+  return result;
+}
   
   class HScrollbar {
   float barWidth;  //Bar's width in pixels
