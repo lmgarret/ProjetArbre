@@ -12,21 +12,24 @@ public class Week8_3 extends PApplet{
     thresholdBarDown = new HScrollbar(0,580,800,20);
     thresholdBarUp = new HScrollbar(0,555,800,20);
     img = loadImage("board3.jpg");
-    result = Sobel(img);
+    result = createImage(width, height, ALPHA);
+    //result = Sobel(img);
 
   }
   
   public void draw(){
+     Sobel(result);
+    re(img);
     image(result,0,0);
     thresholdBarDown.display();
     thresholdBarDown.update();
     thresholdBarUp.display();
     thresholdBarUp.update();
-    re(img);
-    result = Sobel(result);
+
+    
   }
   public void re(PImage imga){
-        result = createImage(width, height, RGB);
+        //result = createImage(width, height, RGB);
     for(int i=0; i<imga.width*imga.height;i++){
        if(hue(imga.pixels[i])>thresholdBarUp.getPos()*255){
           result.pixels[i]=color(255,255,255);
@@ -36,7 +39,7 @@ public class Week8_3 extends PApplet{
     }
    }
    
-public PImage Sobel(PImage img){
+public void Sobel(PImage img){
  float[][] hKernel = {{0,1,0},
                       {0,0,0},
                      {0,-1,0}};
@@ -44,7 +47,7 @@ public PImage Sobel(PImage img){
                       {1,0,-1},
                      {0,0,0}};
                      
-   PImage result = createImage(img.width, img.height, ALPHA);
+ //  PImage result = createImage(img.width, img.height, ALPHA);
    
    for(int i=0; i<img.width*img.height;i++){
      result.pixels[i]=color(0);
@@ -80,7 +83,6 @@ public PImage Sobel(PImage img){
        }
      }
    }                     
-  return result;
 }
   
   class HScrollbar {
