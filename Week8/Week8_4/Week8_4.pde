@@ -9,14 +9,13 @@ public class Week8_4 extends PApplet{
    img = loadImage("board1.jpg");
    //result = img;
     result = Sobel(img);
-
    //     noLoop();
   }
   
  public void draw(){
     image(result,0,0);
  }
-
+ 
 public PImage Sobel(PImage img){
  float[][] hKernel = {{0,1,0},
                       {0,0,0},
