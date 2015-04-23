@@ -31,16 +31,13 @@ public void hough(PImage img) {
        double r =0;
        float phi =0;
        double Rmax = 0;
+       int i =0;
        for(phi=0 ;phi< PI ;phi+=discretizationStepsPhi) {
          r = x * cos(phi) + y* sin(phi);
-         if (r > Rmax)
-         Rmax = r;
+         i++;
+         accumulator[ i *(rDim + 2) +(int) Math.floor(r)] +=1;
           
-       } // WTF IS DAT ? genre pourquoi cette formule a la con qui donne un double je ne comprends pas
-       for(phi=0 ;phi< PI ;phi+=discretizationStepsPhi) {
-         r = x * cos(phi) + y* sin(phi);
-         accumulator[phi * Rmax +r] += 1;
-       }
+       } // WTF IS DAT ? genre pourquoi cette formule a la con qui donne un double je ne comprends pa
        
      }
    } 
