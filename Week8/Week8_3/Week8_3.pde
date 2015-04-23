@@ -13,15 +13,21 @@ public class Week8_3 extends PApplet{
     size(800,600);
     thresholdBarDown = new HScrollbar(0,580,800,20);
     thresholdBarUp = new HScrollbar(0,555,800,20);
-    saveDown = 0.5;
-    saveUp = 0.5;
+    saveDown = 0;
+    saveUp = 0;
     img = loadImage("board3.jpg");
+    resultA = createImage(width, height, ALPHA);
     result = createImage(width, height, ALPHA);
   }
   
   public void draw(){
-    result =  re(result);
-    result = Sobel(img);
+    if(saveUp!=thresholdBarUp.getPos()){
+      saveUp=thresholdBarUp.getPos();
+      resultA =  re(img);
+    }else if(saveDown!=thresholdBarDown.getPos()){
+      saveDown = thresholdBarDown.getPos();
+    result = Sobel(resultA);
+    }
     image(result,0,0);
     thresholdBarDown.display();
     thresholdBarDown.update();
