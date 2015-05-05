@@ -29,13 +29,12 @@ public void hough(PImage img) {
      
      if(brightness(img.pixels[y*img.width + x]) != 0) {
        double r =0;
-       float phi =0;
+       int accPhi =0;
        double Rmax = 0;
-       int i =0;
-       for(phi=0 ;phi< PI ;phi+=discretizationStepsPhi) {
-         r = x * cos(phi) + y* sin(phi);
-         i++;
-         accumulator[ i *(rDim + 2) +(int) Math.floor(r)] +=1;
+      for(accPhi=0 ;accPhi< phiDim ;accPhi++) {
+         r = x * cos(accPhi*discretizationStepsPhi) + y* sin(accPhi*discretizationStepsPhi);
+         r=r/discretizationStepsR + (rDim-1)/2;
+         accumulator[(accPhi+1)*(rDim + 2) +(int) Math.floor(r+1)]++;
           
        } // WTF IS DAT ? genre pourquoi cette formule a la con qui donne un double je ne comprends pa
        

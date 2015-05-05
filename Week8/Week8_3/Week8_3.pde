@@ -9,25 +9,27 @@ public class Week8_3 extends PApplet{
   HScrollbar thresholdBarUp;
   PImage img;
   PImage result;
+  PImage resultA;
   public void setup(){
     size(800,600);
     thresholdBarDown = new HScrollbar(0,580,800,20);
     thresholdBarUp = new HScrollbar(0,555,800,20);
     saveDown = 0;
     saveUp = 0;
-    img = loadImage("board3.jpg");
+    img = loadImage("board1.jpg");
     resultA = createImage(width, height, ALPHA);
     result = createImage(width, height, ALPHA);
+      resultA =  re(img);
   }
   
   public void draw(){
-    if(saveUp!=thresholdBarUp.getPos()){
-      saveUp=thresholdBarUp.getPos();
-      resultA =  re(img);
-    }else if(saveDown!=thresholdBarDown.getPos()){
-      saveDown = thresholdBarDown.getPos();
+  //  if(saveUp!=thresholdBarUp.getPos()){
+   //   saveUp=thresholdBarUp.getPos();
+
+   // }else if(saveDown!=thresholdBarDown.getPos()){
+  //    saveDown = thresholdBarDown.getPos();
     result = Sobel(resultA);
-    }
+    //}
     image(result,0,0);
     thresholdBarDown.display();
     thresholdBarDown.update();
@@ -36,17 +38,17 @@ public class Week8_3 extends PApplet{
 
     
   }
-  public PImage re(PImage imga){
+  public PImage re(PImage img){
         result = createImage(width, height, RGB);
-    for(int i=0; i<imga.width*imga.height;i++){
-       if(hue(imga.pixels[i])>thresholdBarUp.getPos()*255){
-          result.pixels[i]=color(255,255,255);
+    for(int i=0; i<img.width*img.height;i++){   
+       if(hue(img.pixels[i])>105 && hue(img.pixels[i])<135){
+         result.pixels[i]=color(255,255,255);        
        }else{
-         result.pixels[i]=color(0,0,0);
+          result.pixels[i]=color(0,0,0);
     }
     }
     return result;
-   }
+  }
    
 public PImage Sobel(PImage img){
  float[][] hKernel = {{0,1,0},
@@ -85,7 +87,7 @@ public PImage Sobel(PImage img){
   }
    for(int y =2; y<img.height-2; y++){   
      for(int x =2; x<img.width-2; x++){
-       if(buffer[y*img.width+x]>(int)(max*thresholdBarDown.getPos())){
+       if(buffer[y*img.width+x]>(int)(max*0.3f)){
          result.pixels[y*img.width+x] = color(255);
        }else{
          result.pixels[y*img.width+x] = color(0);

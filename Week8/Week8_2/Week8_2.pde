@@ -22,14 +22,16 @@ public class Week8_2 extends PApplet{
   }
   public void re(){
         result = createImage(width, height, RGB);
-    for(int i=0; i<img.width*img.height;i++){
-       if(brightness(img.pixels[i])>thresholdBar.getPos()*255){
-          result.pixels[i]=color(255,255,255);
+    for(int i=0; i<img.width*img.height;i++){   
+       if(hue(img.pixels[i])>105 && hue(img.pixels[i])<135){
+         result.pixels[i]=color(255,255,255);        
        }else{
-         result.pixels[i]=color(0,0,0);
+          result.pixels[i]=color(0,0,0);
     }
     }
-   }
+    
+   
+}
   
   class HScrollbar {
   float barWidth;  //Bar's width in pixels
