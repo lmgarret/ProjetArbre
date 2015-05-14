@@ -25,12 +25,16 @@ public PImage Sobel(PImage img){
                       {1,0,-1},
                      {0,0,0}};
    int pixelHue;
-   float minColor = 110;
-   float maxColor = 135;
+   int pixelBright;
+   float minColor = 100;
+   float maxColor = 130;
+   float minBright = 20;
+   float maxBright = 110;
    for(int x=1; x<img.width-1; x++){
     for(int y=1; y<img.height-1; y++){
       pixelHue = (int)hue(img.pixels[y*img.width + x]);
-      if(pixelHue>maxColor || pixelHue <minColor){
+      pixelBright = (int)brightness(img.pixels[y*img.width +x ]);
+      if(pixelHue>maxColor || pixelHue <minColor || pixelBright < minBright || pixelBright>maxBright){
       preResult.pixels[y*img.width + x] = color(0);    
       }else {
         preResult.pixels[y*img.width + x] = color(255);

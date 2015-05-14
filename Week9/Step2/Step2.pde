@@ -9,13 +9,14 @@ public class Step2 extends PApplet{
     size(800,600);
    img = loadImage("board1.jpg");
     image(img,0,0);
-    hough(Sobel(img));
+    hough(Sobel((img)));
+    
     
        //noLoop();
   }
   
   
-  public PImage Sobel(PImage img){
+ public PImage Sobel(PImage img){
  PImage preResult = createImage(img.width, img.height, ALPHA);
  float[][] hKernel = {{0,1,0},
                       {0,0,0},
@@ -25,15 +26,15 @@ public class Step2 extends PApplet{
                      {0,0,0}};
    int pixelHue;
    int pixelBright;
-   float minBright = 30;
-   float maxBright = 220;
-   float minColor = 110;
-   float maxColor = 135;
+   float minColor = 100;
+   float maxColor = 130;
+   float minBright = 20;
+   float maxBright = 110;
    for(int x=1; x<img.width-1; x++){
     for(int y=1; y<img.height-1; y++){
       pixelHue = (int)hue(img.pixels[y*img.width + x]);
-      pixelBright = (int) brightness(img.pixels[y*img.width +x]);
-      if(pixelHue>maxColor || pixelHue <minColor ||pixelBright >maxBright ||pixelBright < minBright){
+      pixelBright = (int)brightness(img.pixels[y*img.width +x ]);
+      if(pixelHue>maxColor || pixelHue <minColor || pixelBright < minBright || pixelBright>maxBright){
       preResult.pixels[y*img.width + x] = color(0);    
       }else {
         preResult.pixels[y*img.width + x] = color(255);
@@ -86,7 +87,7 @@ public class Step2 extends PApplet{
 public void hough(PImage img) {
  
  
- float discretizationStepsPhi =0.06f;
+ float discretizationStepsPhi =0.005f;
  float discretizationStepsR = 2.5f;
 
  int phiDim = (int) (Math.PI / discretizationStepsPhi);
@@ -109,7 +110,7 @@ public void hough(PImage img) {
    } 
  }
   for(int idx=0;idx<accumulator.length ;idx++) {
-    if(accumulator[idx]>300){
+    if(accumulator[idx]>350){
       int accPhi = (int) (idx / (rDim+2)) -1;
       int accR = idx - (accPhi +1) * (rDim+2) -1;
       float r =(accR- (rDim-1) *0.5f) * discretizationStepsR;
