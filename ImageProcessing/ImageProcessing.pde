@@ -8,13 +8,12 @@ public class ImageProcessing extends PApplet{
   ArrayList<Integer> bestCandidates=new ArrayList<Integer>();
     //INPUT -> HUE/Brightness/Saturation thresholding -> Blurring -> Intensity thresholding ->Sobel -> HoughTransform
   public void setup(){
-    size(1200,300);
-   img = loadImage("board3.jpg");
-   img.resize(400,300);
+    size(1500,325);
+   img = loadImage("board2.jpg");
+   img.resize(500,325);
     image(img,0,0);
     getIntersections(hough(Sobel(img, IntensityFilter(blurr(PreFilters(img))))));
-    hough(Sobel(img, IntensityFilter(blurr(PreFilters(img)))));
-    image(Sobel(img, IntensityFilter(blurr(PreFilters(img)))),800,0);
+    image(Sobel(img, IntensityFilter(blurr(PreFilters(img)))),1000,0);
   }
   
   
@@ -24,8 +23,8 @@ public class ImageProcessing extends PApplet{
      houghImg.pixels[i] = color(min(255,accumulator[i]));
     }
    houghImg.updatePixels();
-   houghImg.resize(400,300);
-   image(houghImg,400,0);
+   houghImg.resize(500,325);
+   image(houghImg,500,0);
   }
 
   
@@ -164,7 +163,7 @@ public class ImageProcessing extends PApplet{
 public ArrayList<PVector> hough(PImage img) {
  ArrayList<PVector> retValue = new ArrayList<PVector>();
  
- float discretizationStepsPhi =0.02f;
+ float discretizationStepsPhi =0.005f;
  float discretizationStepsR = 2.5f;
 
  int phiDim = (int) (Math.PI / discretizationStepsPhi);
@@ -186,7 +185,6 @@ public ArrayList<PVector> hough(PImage img) {
     }
    } 
  }
- drawHough(accumulator, rDim, phiDim);
    //Here begin the optimization
    
    int neighbourhood = 10;
@@ -254,7 +252,7 @@ for(int accR = 0; accR<rDim; accR++){
          else   
          line(x2,y2,x3,y3); 
       } 
- }
+ } drawHough(accumulator, rDim, phiDim);
   return retValue;
  }
 
