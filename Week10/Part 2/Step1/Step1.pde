@@ -10,7 +10,7 @@ public class Step1 extends PApplet{
   
   public void setup(){
     size(800,600);
-   img = loadImage("board1.jpg");
+   img = loadImage("board3.jpg");
     image(img,0,0);
     getIntersections(hough(Sobel((img))));
     

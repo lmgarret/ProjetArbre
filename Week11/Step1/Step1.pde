@@ -1,21 +1,79 @@
 import processing.core.PApplet;
 import processing.core.PImage;
 import java.util.*;
+import processing.video.Capture;
+
 
 public class Step1 extends PApplet{ 
   PImage img;
   PImage result;
+    Capture cam;
   ArrayList<Integer> bestCandidates=new ArrayList<Integer>();
     //INPUT -> HUE/Brightness/Saturation thresholding -> Blurring -> Intensity thresholding ->Sobel -> HoughTransform
+    
   public void setup(){
     size(800,600);
-   img = loadImage("board3.jpg");
-    image(Sobel(img),0,0);
-    getIntersections(hough(Sobel((img))));
-    
-    
+    //img = loadImage("board1.jpg");
+        String[] cameras = Capture.list();
+    if (cameras.length == 0) {
+      println("There are no cameras available for capture.");
+      exit();
+    } else {
+      println("Available cameras:");
+      for (int i = 0; i < cameras.length; i++) {
+        println(cameras[i]);
+      }
+      cam = new Capture(this, cameras[0]);
+      cam.start();
+      img = cam.get();
+    }
        //noLoop();
   }
+  void draw() {
+    if (cam.available() == true) {
+      cam.read();
+      img = cam.get();
+      image(img, 0, 0);
+      if(img != null){
+         
+    PImage sobelImg = Sobel(img);
+    image(sobelImg,0,0);
+    List<PVector> lines = hough(sobelImg);
+    List<PVector> allLines = getIntersections(lines);
+    
+    QuadGraph quadGraph= new QuadGraph();
+    quadGraph.build(lines, width, height);
+    
+    List<int[]> quads = quadGraph.findCycles();
+    List<int[]> filteredQuads = new ArrayList<int[]>();
+    for (int[] cy : quads) {
+          //if(quadGraph.isConvex(lines.get(cy[0]), lines.get(cy[1]),lines.get(cy[2]),lines.get(cy[3])) && quadGraph.validArea(lines.get(cy[0]), lines.get(cy[1]),lines.get(cy[2]),lines.get(cy[3]), width, height) && quadGraph.nonFlatQuad(lines.get(cy[0]), lines.get(cy[1]),lines.get(cy[2]),lines.get(cy[3]))){
+             filteredQuads.add(cy); 
+          //}
+    }
+
+    for (int[] quad : filteredQuads) {
+      PVector l1 = lines.get(quad[0]);
+      PVector l2 = lines.get(quad[1]);
+      PVector l3 = lines.get(quad[2]);
+      PVector l4 = lines.get(quad[3]);
+      // (intersection() is a simplified version of the
+      // intersections() method you wrote last week, that simply
+      // return the coordinates of the intersection between 2 lines)
+      PVector c12 = intersection(l1, l2);
+      PVector c23 = intersection(l2, l3);
+      PVector c34 = intersection(l3, l4);
+      PVector c41 = intersection(l4, l1);
+      // Choose a random, semi-transparent colour
+      Random random = new Random();
+      fill(color(min(255, random.nextInt(300)),
+      min(255, random.nextInt(300)),
+      min(255, random.nextInt(300)), 50));
+      quad(c12.x,c12.y,c23.x,c23.y,c34.x,c34.y,c41.x,c41.y);
+    } 
+      }
+    }
+}
   
   public PImage blurr(PImage img){
     float[][] kernel = {
@@ -142,6 +200,16 @@ public class Step1 extends PApplet{
     }
   }
   return intersections;
+}
+public PVector intersection(PVector line1, PVector line2){
+   double P1 = line1.y;
+      double P2 = line2.y;
+      double R1 = line1.x;
+      double R2 = line2.x;
+      double d = Math.cos(P2)*Math.sin(P1) - Math.cos(P1)*Math.sin(P2);
+      float x = (float)((R2*Math.sin(P1) - R1*Math.sin(P2))/d);
+      float y = (float)((-1*R2*Math.cos(P1)+R1*Math.cos(P2))/d);
+      return new PVector((int)x,(int)y);
 }
   
   
@@ -280,6 +348,7 @@ for(int accR = 0; accR<rDim; accR++){
       }  
     }
   }*/
+  bestCandidates.clear();
   return retValue;
  }
 
