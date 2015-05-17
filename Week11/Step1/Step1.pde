@@ -2,13 +2,6 @@ import processing.core.PApplet;
 import processing.core.PImage;
 import java.util.*;
 
-
-public class Step1 extends PApplet{ 
-import processing.core.PApplet;
-import processing.core.PImage;
-import java.util.*;
-
-
 public class Step1 extends PApplet{ 
   PImage img;
   PImage result;
@@ -16,14 +9,37 @@ public class Step1 extends PApplet{
     //INPUT -> HUE/Brightness/Saturation thresholding -> Blurring -> Intensity thresholding ->Sobel -> HoughTransform
   public void setup(){
     size(800,600);
-   img = loadImage("board1.jpg");
-    image(img,0,0);
+   img = loadImage("board3.jpg");
+    image(Sobel(img),0,0);
     getIntersections(hough(Sobel((img))));
     
     
        //noLoop();
   }
   
+  public PImage blurr(PImage img){
+    float[][] kernel = {
+      {9,12,9},
+      {12,15,12},
+      {9,12,9}
+    };
+    float weight = 1.f;
+    PImage result = createImage(img.width, img.height, ALPHA);
+      int ksize = 3;
+      for(int x = 1; x<img.width-1; x++){
+        for(int y =1; y<img.height-1;y++){
+          int res = 0;
+          for(int i =x-1; i<x+2;i++){
+            for(int j =y-1;j<y+2; j++){
+               res+= brightness(img.pixels[j*img.width + i]) * kernel[i+1-x][j+1-y];
+            }
+          }
+          result.pixels[y*img.width + x] = (int)(res/weight);
+        }
+      }
+      return result;
+  }
+              
   
  public PImage Sobel(PImage img){
  PImage preResult = createImage(img.width, img.height, ALPHA);
@@ -36,12 +52,15 @@ public class Step1 extends PApplet{
    int pixelHue;
    int pixelBright;
    int pixelSat;
-   float minColor = 100;
-   float maxColor = 130;
-   float minBright = 20;
-   float maxBright = 110;
-   float minSat =140;
-   float maxSat = 255;
+   float minColor = 100; 
+   float maxColor = 140; 
+   float minBright = 20; 
+   float maxBright = 150; 
+   float minSat =80; 
+   float maxSat = 255; 
+   float maxBrightv2 =60; 
+   float minBrightv2 = 40;
+   
    for(int x=1; x<img.width-1; x++){
     for(int y=1; y<img.height-1; y++){
       pixelHue = (int)hue(img.pixels[y*img.width + x]);
@@ -57,7 +76,17 @@ public class Step1 extends PApplet{
   }
    
                      
-   PImage result = createImage(img.width, img.height, ALPHA);
+   PImage result = blurr(preResult);
+  for(int x=1; x<img.width-1; x++){
+    for(int y=1; y<img.height-1; y++){
+      pixelBright = (int)brightness(img.pixels[y*img.width +x ]);
+      if(pixelBright > maxBrightv2 || pixelBright<minBrightv2){
+        result.pixels[y*img.width + x] = color(0);    
+      }else{
+        result.pixels[y*img.width + x] = color(255);    
+    }
+    }
+   }
    
    float max=0;
    float[] buffer = new float[img.width*img.height];
@@ -90,7 +119,7 @@ public class Step1 extends PApplet{
          result.pixels[y*img.width+x] = color(0);
        }
      }
-   }                     
+   }                
   return result;
 }
   
