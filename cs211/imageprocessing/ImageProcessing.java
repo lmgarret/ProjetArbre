@@ -1,89 +1,66 @@
-import processing.core.PApplet;
-import processing.core.PImage;
-import java.util.*;
-import processing.video.Capture;
+import processing.core.*; 
+import processing.data.*; 
+import processing.event.*; 
+import processing.opengl.*; 
+
+import processing.core.PApplet; 
+import processing.core.PImage; 
+import java.util.*; 
+
+import java.util.HashMap; 
+import java.util.ArrayList; 
+import java.io.File; 
+import java.io.BufferedReader; 
+import java.io.PrintWriter; 
+import java.io.InputStream; 
+import java.io.OutputStream; 
+import java.io.IOException; 
 
 
-public class Step1 extends PApplet{ 
+
+
+
+
+
+public class ImageProcessing extends PApplet{ 
   PImage img;
   PImage result;
-    Capture cam;
+  int width = 1500;
+  int height = 325;
   ArrayList<Integer> bestCandidates=new ArrayList<Integer>();
-    //INPUT -> HUE/Brightness/Saturation thresholding -> Blurring -> Intensity thresholding ->Sobel -> HoughTransform
-    
-  public void setup(){
-    size(800,600);
-    //img = loadImage("board1.jpg");
-        String[] cameras = Capture.list();
-    if (cameras.length == 0) {
-      println("There are no cameras available for capture.");
-      exit();
-    } else {
-      println("Available cameras:");
-      for (int i = 0; i < cameras.length; i++) {
-        println(cameras[i]);
-      }
-      cam = new Capture(this, cameras[0]);
-      cam.start();
-      img = cam.get();
-    }
-       //noLoop();
-  }
-  void draw() {
-    if (cam.available() == true) {
-      cam.read();
-      img = cam.get();
-      image(img, 0, 0);
-      if(img != null){
-         
-    PImage sobelImg = Sobel(img);
-    image(sobelImg,0,0);
-    List<PVector> lines = hough(sobelImg);
-    List<PVector> allLines = getIntersections(lines);
-    
-    QuadGraph quadGraph= new QuadGraph();
-    quadGraph.build(lines, width, height);
-    
-    List<int[]> quads = quadGraph.findCycles();
-    List<int[]> filteredQuads = new ArrayList<int[]>();
-    for (int[] cy : quads) {
-          //if(quadGraph.isConvex(lines.get(cy[0]), lines.get(cy[1]),lines.get(cy[2]),lines.get(cy[3])) && quadGraph.validArea(lines.get(cy[0]), lines.get(cy[1]),lines.get(cy[2]),lines.get(cy[3]), width, height) && quadGraph.nonFlatQuad(lines.get(cy[0]), lines.get(cy[1]),lines.get(cy[2]),lines.get(cy[3]))){
-             filteredQuads.add(cy); 
-          //}
-    }
-
-    for (int[] quad : filteredQuads) {
-      PVector l1 = lines.get(quad[0]);
-      PVector l2 = lines.get(quad[1]);
-      PVector l3 = lines.get(quad[2]);
-      PVector l4 = lines.get(quad[3]);
-      // (intersection() is a simplified version of the
-      // intersections() method you wrote last week, that simply
-      // return the coordinates of the intersection between 2 lines)
-      PVector c12 = intersection(l1, l2);
-      PVector c23 = intersection(l2, l3);
-      PVector c34 = intersection(l3, l4);
-      PVector c41 = intersection(l4, l1);
-      // Choose a random, semi-transparent colour
-      Random random = new Random();
-      fill(color(min(255, random.nextInt(300)),
-      min(255, random.nextInt(300)),
-      min(255, random.nextInt(300)), 50));
-      quad(c12.x,c12.y,c23.x,c23.y,c34.x,c34.y,c41.x,c41.y);
-    } 
-      }
-    }
-}
   
+    //INPUT -> HUE/Brightness/Saturation thresholding -> Blurring -> Intensity thresholding ->Sobel -> HoughTransform
+    public void setup(){
+    size(width,height);
+    img = loadImage("board2.jpg");
+    img.resize(width/3,height);
+    image(img,0,0);
+    getIntersections(hough(Sobel(img, IntensityFilter(blurr(PreFilters(img))))));
+    image(Sobel(img, IntensityFilter(blurr(PreFilters(img)))),2*width/3,0);
+  }
+  
+  
+  public void drawHough(int[] accumulator, int rDim, int phiDim){
+   PImage houghImg = createImage(rDim+2, phiDim+2, ALPHA);
+   for(int i=0; i<accumulator.length;i++) {
+       houghImg.pixels[i] = color(min(255,accumulator[i]));
+   }
+   houghImg.updatePixels();
+   houghImg.resize(width/3,325);
+   image(houghImg,width/3,0);
+  }
+  
+
   public PImage blurr(PImage img){
+    PImage result = createImage(img.width, img.height, ALPHA);
     float[][] kernel = {
       {9,12,9},
       {12,15,12},
       {9,12,9}
     };
     float weight = 1.f;
-    PImage result = createImage(img.width, img.height, ALPHA);
-      int ksize = 3;
+    int ksize = 3;
+    
       for(int x = 1; x<img.width-1; x++){
         for(int y =1; y<img.height-1;y++){
           int res = 0;
@@ -97,16 +74,10 @@ public class Step1 extends PApplet{
       }
       return result;
   }
+    
               
-  
- public PImage Sobel(PImage img){
- PImage preResult = createImage(img.width, img.height, ALPHA);
- float[][] hKernel = {{0,1,0},
-                      {0,0,0},
-                     {0,-1,0}};
-  float[][] vKernel = {{0,0,0},
-                      {1,0,-1},
-                     {0,0,0}};
+ public PImage PreFilters(PImage img){
+   PImage result = createImage(img.width, img.height, ALPHA);
    int pixelHue;
    int pixelBright;
    int pixelSat;
@@ -115,9 +86,7 @@ public class Step1 extends PApplet{
    float minBright = 20; 
    float maxBright = 150; 
    float minSat =80; 
-   float maxSat = 255; 
-   float maxBrightv2 =60; 
-   float minBrightv2 = 40;
+   float maxSat = 255;
    
    for(int x=1; x<img.width-1; x++){
     for(int y=1; y<img.height-1; y++){
@@ -125,30 +94,46 @@ public class Step1 extends PApplet{
       pixelBright = (int)brightness(img.pixels[y*img.width +x ]);
       pixelSat = (int)saturation(img.pixels[y * img.width +x]);
       if(pixelHue>maxColor || pixelHue <minColor || pixelBright < minBright || pixelBright>maxBright ||pixelSat<minSat ||pixelSat>maxSat){
-      preResult.pixels[y*img.width + x] = color(0);    
+        result.pixels[y*img.width + x] = color(0);    
       }else {
-        preResult.pixels[y*img.width + x] = color(255);
+        result.pixels[y*img.width + x] = color(255);
       }
   }
  
-  }
+  } 
+  return result;
+ } 
+ 
+ 
+ public PImage IntensityFilter(PImage img){
+   float maxBrightv2 =170; 
+   float minBrightv2 = 50;
+   int pixelBright;
+   PImage result = createImage(img.width, img.height, ALPHA);
    
-                     
-   PImage result = blurr(preResult);
-  for(int x=1; x<img.width-1; x++){
+   for(int x=1; x<img.width-1; x++){
     for(int y=1; y<img.height-1; y++){
       pixelBright = (int)brightness(img.pixels[y*img.width +x ]);
       if(pixelBright > maxBrightv2 || pixelBright<minBrightv2){
         result.pixels[y*img.width + x] = color(0);    
       }else{
         result.pixels[y*img.width + x] = color(255);    
-    }
+      }
     }
    }
-   
+   return result;
+ }
+ 
+ 
+ public PImage Sobel(PImage img, PImage result){
+ float[][] hKernel = {{0,1,0},
+                      {0,0,0},
+                     {0,-1,0}};
+  float[][] vKernel = {{0,0,0},
+                      {1,0,-1},
+                     {0,0,0}};
    float max=0;
-   float[] buffer = new float[img.width*img.height];
-   
+   float[] buffer = new float[img.width*img.height]; 
    int N = 3;
 
   for(int x=1; x<img.width-1; x++){
@@ -157,16 +142,15 @@ public class Step1 extends PApplet{
       float sumv = 0;           
       for(int a=-N/2;a<=N/2 ;a++){
         for(int b=-N/2;b<=N/2 ;b++){
-         sumh += brightness(preResult.pixels[(x+a)+(y+b)*img.width])*hKernel[a+N/2][b+N/2];  
-         sumv += brightness(preResult.pixels[(x+a)+(y+b)*img.width])*vKernel[a+N/2][b+N/2];  
+         sumh += brightness(result.pixels[(x+a)+(y+b)*img.width])*hKernel[a+N/2][b+N/2];  
+         sumv += brightness(result.pixels[(x+a)+(y+b)*img.width])*vKernel[a+N/2][b+N/2];  
         }
       }
       double sum = sqrt(pow(sumh, 2)+pow(sumv, 2));
       buffer[y*img.width+x] = (float)sum;
       if(sum>max){
-      max = (float)sum;
+        max = (float)sum;
       }
-      
     }
   }
    for(int y =2; y<img.height-2; y++){   
@@ -180,9 +164,11 @@ public class Step1 extends PApplet{
    }                
   return result;
 }
+
   
   public ArrayList<PVector> getIntersections(List<PVector> lines){
   ArrayList<PVector> intersections = new ArrayList<PVector>();
+  
   for(int i = 0; i<lines.size() -1;i++){
     PVector line1 = lines.get(i);
     for(int j=i+1; j<lines.size(); j++){
@@ -201,27 +187,14 @@ public class Step1 extends PApplet{
   }
   return intersections;
 }
-public PVector intersection(PVector line1, PVector line2){
-   double P1 = line1.y;
-      double P2 = line2.y;
-      double R1 = line1.x;
-      double R2 = line2.x;
-      double d = Math.cos(P2)*Math.sin(P1) - Math.cos(P1)*Math.sin(P2);
-      float x = (float)((R2*Math.sin(P1) - R1*Math.sin(P2))/d);
-      float y = (float)((-1*R2*Math.cos(P1)+R1*Math.cos(P2))/d);
-      return new PVector((int)x,(int)y);
-}
   
   
 public ArrayList<PVector> hough(PImage img) {
  ArrayList<PVector> retValue = new ArrayList<PVector>();
- 
- float discretizationStepsPhi =0.02f;
+ float discretizationStepsPhi =0.005f;
  float discretizationStepsR = 2.5f;
-
  int phiDim = (int) (Math.PI / discretizationStepsPhi);
  int rDim = (int) (((img.width + img.height)*2 + 1) / discretizationStepsR);
- 
  int[] accumulator = new int [(phiDim +2 ) * (rDim + 2)];
  
  for(int y=0 ; y<img.height ;y++) {
@@ -238,16 +211,9 @@ public ArrayList<PVector> hough(PImage img) {
     }
    } 
  }
- /*  for(int idx=0;idx<accumulator.length ;idx++) {
-    if(accumulator[idx]>200){
-      bestCandidates.add(idx);
-    }
-   }*/
-   //Here begin the optimization
    
-   int neighbourhood = 10;
-
-int minVotes = 200;
+  int neighbourhood = 10;
+  int minVotes = 200;
 
 for(int accR = 0; accR<rDim; accR++){
   for(int accPhi=0; accPhi<phiDim; accPhi++){
@@ -271,7 +237,7 @@ for(int accR = 0; accR<rDim; accR++){
     }
   }
 }
-   //Here it ends
+
  Collections.sort(bestCandidates, new HoughComparator(accumulator));
  int nLines = 4;
  for(int i=0; i<nLines;i++){
@@ -310,45 +276,7 @@ for(int accR = 0; accR<rDim; accR++){
          else   
          line(x2,y2,x3,y3); 
       } 
- }/*
-  for(int idx=0;idx<accumulator.length ;idx++) {
-    if(accumulator[idx]>200){
-      int accPhi = (int) (idx / (rDim+2)) -1;
-      int accR = idx - (accPhi +1) * (rDim+2) -1;
-      float r =(accR- (rDim-1) *0.5f) * discretizationStepsR;
-      float phi = accPhi * discretizationStepsPhi;
-      
-      int x0=0;
-      int y0=(int) (r/sin(phi));
-      int x1= (int) (r/cos(phi));
-      int y1 =0;
-      int x2 = img.width;
-      int y2 = (int) (-cos(phi) / sin(phi) *x2+r /sin(phi));
-      int y3 = img.width;
-      int x3 = (int)(-(y3-r/sin(phi)) * (sin(phi) /cos(phi)));
-      
-      stroke(204,102,0);
-      if(y0>0){
-        if(x1>0)
-          line(x0,y0,x1,y1);
-        else if(y2>0)
-           line(x0,y0,x2,y2);
-        else
-           line(x0,y0,x3,y3);
-      }
-      else {
-        if(x1>0) {
-          if(y2 >0)
-            line(x1,y1,x2,y2);
-          else
-            line(x1,y1,x3,y3);
-          }
-         else   
-         line(x2,y2,x3,y3); 
-      }  
-    }
-  }*/
-  bestCandidates.clear();
+ } drawHough(accumulator, rDim, phiDim);
   return retValue;
  }
 
@@ -367,5 +295,5 @@ class HoughComparator implements Comparator<Integer> {
    return 1;
  } 
 }
-}
-  
+
+} 
