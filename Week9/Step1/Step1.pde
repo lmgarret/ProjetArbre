@@ -81,7 +81,7 @@ public class Step1 extends PApplet{
 public void hough(PImage img) {
  
  
- float discretizationStepsPhi =0.06f;
+ float discretizationStepsPhi =0.02f;
  float discretizationStepsR = 2.5f;
 
  int phiDim = (int) (Math.PI / discretizationStepsPhi);
