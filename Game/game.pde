@@ -25,7 +25,7 @@ PShape tree;
 
 void setup(){
   size(700, 700, P3D);
-  noStroke();
+ /* noStroke();
   tree = loadShape("data/3DModels/Obj/tree_no_tex.obj");
   tree.scale(6);
   gameGraphics = createGraphics(width,height,P3D);
@@ -34,10 +34,11 @@ void setup(){
   scoresSurface = createGraphics(height/8 - 20, height/5 - 20, P2D);
   bartChartSurface = createGraphics(width-(topViewSurface.width+scoresSurface.width+2*10)-20, height/5 - 20, P2D);
   mover = new Mover();
-  cylinder.init();
+  cylinder.init();*/
+  calculate2D3DAngles();
 }
 
-void draw(){
+/*void draw(){
   if(bestScore<userPoints){
     bestScore=userPoints;
   }
@@ -46,7 +47,7 @@ void draw(){
   gameGraphics.background(200);
   gameGraphics.directionalLight(50, 100, 125, 0, 1, 0);
   gameGraphics.ambientLight(102, 102, 102);
-  if(mode==0){
+  if(mode==0)  {
     gameGraphics.camera(width/2, height/2-700, depth, 0, 0, 0, 0, 1, 0);
     
     gameGraphics.pushMatrix();
@@ -76,6 +77,6 @@ void draw(){
   image(gameGraphics,0,0);
   
   drawDataVizualSurface();
-}
+}*/
 
 

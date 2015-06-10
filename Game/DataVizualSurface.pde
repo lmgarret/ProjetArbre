@@ -43,7 +43,7 @@ void drawBarChart(){
   final int yBase = bartChartSurface.height-10;
   final int espace = 2;
   int squareSize = (bartChartSurface.width)/40 - espace;
-  System.out.println("squareSize = "+squareSize+". Width= "+bartChartSurface.width);
+  //System.out.println("squareSize = "+squareSize+". Width= "+bartChartSurface.width);
   bartChartSurface.beginDraw();
   bartChartSurface.noStroke();
   bartChartSurface.background(200);

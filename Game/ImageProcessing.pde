@@ -26,9 +26,11 @@ PImage result;
 ArrayList<Integer> bestCandidates=new ArrayList<Integer>();
 Capture cam;
 boolean useCamera = false;
+boolean drawMode = true;
 String currentBoardImage = "data/Images/board1.jpg";
   
     //INPUT -> HUE/Brightness/Saturation thresholding -> Blurring -> Intensity thresholding ->Sobel -> HoughTransform
+    
  /* public void setup(){
     size(width,height);
     if(useCamera){
@@ -82,12 +84,51 @@ String currentBoardImage = "data/Images/board1.jpg";
       drawQuads(houghLines);
     }
   }*/
+  public void calculate2D3DAngles(){
+    img = loadImage(currentBoardImage);
+
+    if(drawMode){
+      image(img,0,0);
+    }
+    PImage intensityFilteredImg = IntensityFilter(blurr(PreFilters(img)));
+    ArrayList<PVector> houghLines = hough(Sobel(img, intensityFilteredImg));
+    List<int[]> quads = getQuads(houghLines);
+    ArrayList<PVector> intersections = getIntersections(houghLines);    
+    TwoDThreeD tdtd = new TwoDThreeD(img.width, img.height);
+    PVector rotationVector = tdtd.get3DRotations(TwoDThreeD.sortCorners(intersections));
+    println(currentBoardImage+": rx="+rotationVector.x*180.0/Math.PI+", ry="+rotationVector.y*180.0/Math.PI+", rz="+rotationVector.z*180.0/Math.PI);
+  }
   
-  public void drawQuads(ArrayList<PVector> lines){
+  public List<int[]> getQuads(ArrayList<PVector> lines){
     QuadGraph qgraph = new QuadGraph();
     qgraph.build(lines, width, height);
     List<int[]> quads = qgraph.findCycles();
-    translate(2*width/3.0,0);
+    List<int[]> quadsFiltered = new ArrayList<int[]>();
+    for (int[] quad : quads) {
+        PVector l1 = lines. get(quad[0]);
+        PVector l2 = lines. get(quad[1]);
+        PVector l3 = lines. get(quad[2]);
+        PVector l4 = lines. get(quad[3]);
+           
+        // (intersection() is a simplified version of the
+        // intersections() method you wrote last week, that simply
+        // return the coordinates of the intersection between 2 lines)
+        PVector c12 = intersection(l1, l2);
+        PVector c23 = intersection(l2, l3);
+        PVector c34 = intersection(l3, l4);
+        PVector c41 = intersection(l4, l1);
+       if(QuadGraph.isConvex(c12,c23,c34,c41) && QuadGraph.validArea(c12,c23,c34,c41, width*height,0) && QuadGraph.nonFlatQuad(c12,c23,c34,c41)){
+          quadsFiltered.add(quad);
+       }
+    }
+    
+    if(drawMode){
+      drawQuads(quadsFiltered, lines);
+    }
+    return quadsFiltered;
+  }
+  private void drawQuads(List<int[]> quads, ArrayList<PVector> lines){
+    //translate(2*width/3.0,0);
      for (int[] quad : quads) {
          PVector l1 = lines. get(quad[0]);
          PVector l2 = lines. get(quad[1]);
@@ -101,50 +142,15 @@ String currentBoardImage = "data/Images/board1.jpg";
          PVector c23 = intersection(l2, l3);
          PVector c34 = intersection(l3, l4);
          PVector c41 = intersection(l4, l1);
-         if(QuadGraph.isConvex(c12,c23,c34,c41) && QuadGraph.validArea(c12,c23,c34,c41, width*height,0) && QuadGraph.nonFlatQuad(c12,c23,c34,c41)){
 
-            // Choose a random, semi-transparent colour
-            Random random = new Random();
-            fill(color(min(255, random. nextInt(300)),
-            min(255, random. nextInt(300)),
-            min(255, random. nextInt(300)), 50));
-            quad(c12. x, c12. y, c23. x, c23. y, c34. x, c34. y, c41. x, c41. y);
-         }
-    } 
-    for(PVector pv : lines){
-      float r = pv.x;
-      float phi = pv.y;
-      int x0=0;
-      int y0=(int) (r/sin(phi));
-      int x1= (int) (r/cos(phi));
-      int y1 =0;
-      int x2 = img.width;
-      int y2 = (int) (-cos(phi) / sin(phi) *x2+r /sin(phi));
-      int y3 = img.width;
-      int x3 = (int)(-(y3-r/sin(phi)) * (sin(phi) /cos(phi)));
-      
-      stroke(204,102,0);
-      if(y0>0){
-        if(x1>0)
-          line(x0,y0,x1,y1);
-        else if(y2>0)
-           line(x0,y0,x2,y2);
-        else
-           line(x0,y0,x3,y3);
-      }
-      else {
-        if(x1>0) {
-          if(y2 >0)
-            line(x1,y1,x2,y2);
-          else
-            line(x1,y1,x3,y3);
-          }
-         else   
-         line(x2,y2,x3,y3); 
-      } 
+         // Choose a random, semi-transparent colour
+         Random random = new Random();
+         fill(color(min(255, random. nextInt(300)),
+         min(255, random. nextInt(300)),
+         min(255, random. nextInt(300)), 50));
+         quad(c12. x, c12. y, c23. x, c23. y, c34. x, c34. y, c41. x, c41. y);
     }
-    getIntersections(lines);
-    translate(-2*width/3.0,0);
+   // translate(-2*width/3.0,0);
   }
   public PVector intersection(PVector line1, PVector line2){
       double P1 = line1.y;
@@ -297,104 +303,107 @@ String currentBoardImage = "data/Images/board1.jpg";
       float x = (float)((R2*Math.sin(P1) - R1*Math.sin(P2))/d);
       float y = (float)((-1*R2*Math.cos(P1)+R1*Math.cos(P2))/d);
       intersections.add(new PVector((int)x,(int)y));
-      fill(255,128,0);
-      ellipse(x,y,10,10);
+      if(drawMode){
+        fill(255,128,0);
+        ellipse(x,y,10,10);
+      }
     }
   }
   return intersections;
 }
   
   
-public ArrayList<PVector> hough(PImage img) {
- ArrayList<PVector> retValue = new ArrayList<PVector>();
- float discretizationStepsPhi =0.005f;
- float discretizationStepsR = 2.5f;
- int phiDim = (int) (Math.PI / discretizationStepsPhi);
- int rDim = (int) (((img.width + img.height)*2 + 1) / discretizationStepsR);
- int[] accumulator = new int [(phiDim +2 ) * (rDim + 2)];
- 
- for(int y=0 ; y<img.height ;y++) {
-   for(int x=0 ;x<img.width;x++){
-     if(brightness(img.pixels[y*img.width + x]) != 0) {
-       int r =0;
-       int phi =0;
-       double Rmax = 0;
-       for(phi=0 ;phi< phiDim ;phi++) {
-         r = (int)Math.round(x * cos(phi*discretizationStepsPhi) + y* sin(phi*discretizationStepsPhi));
-         r=(int)(r/(discretizationStepsR) + (rDim+1)/2);
-         accumulator[phi*(rDim+2)+r]+=1;      
-      }        
-    }
-   } 
- }
-   
-  int neighbourhood = 10;
-  int minVotes = 200;
-
-for(int accR = 0; accR<rDim; accR++){
-  for(int accPhi=0; accPhi<phiDim; accPhi++){
-    int idx = (accPhi+1)*(rDim+2) + accR + 1;
-    if(accumulator[idx] > minVotes){
-      boolean bestCandidate = true;
-      for(int dPhi=-neighbourhood/2;dPhi<neighbourhood/2 + 1; dPhi++){
-        if(accPhi+dPhi<0 || accPhi+dPhi >= phiDim) continue;
-        for(int dR = -neighbourhood/2; dR<neighbourhood/2 +1;dR++){
-          if(accR+dR<0 || accR + dR>=rDim) continue;
-          int neighbourIdx = (accPhi + dPhi + 1) * (rDim + 2) + accR + dR + 1;
-          if(accumulator[idx]<accumulator[neighbourIdx]){
-            bestCandidate=false;
-            break;
+  public ArrayList<PVector> hough(PImage img) {
+     ArrayList<PVector> retValue = new ArrayList<PVector>();
+     float discretizationStepsPhi =0.005f;
+     float discretizationStepsR = 2.5f;
+     int phiDim = (int) (Math.PI / discretizationStepsPhi);
+     int rDim = (int) (((img.width + img.height)*2 + 1) / discretizationStepsR);
+     int[] accumulator = new int [(phiDim +2 ) * (rDim + 2)];
+     
+     for(int y=0 ; y<img.height ;y++) {
+       for(int x=0 ;x<img.width;x++){
+         if(brightness(img.pixels[y*img.width + x]) != 0) {
+           int r =0;
+           int phi =0;
+           double Rmax = 0;
+           for(phi=0 ;phi< phiDim ;phi++) {
+             r = (int)Math.round(x * cos(phi*discretizationStepsPhi) + y* sin(phi*discretizationStepsPhi));
+             r=(int)(r/(discretizationStepsR) + (rDim+1)/2);
+             accumulator[phi*(rDim+2)+r]+=1;      
+          }        
+        }
+       } 
+     }
+       
+      int neighbourhood = 10;
+      int minVotes = 200;
+    
+    for(int accR = 0; accR<rDim; accR++){
+      for(int accPhi=0; accPhi<phiDim; accPhi++){
+        int idx = (accPhi+1)*(rDim+2) + accR + 1;
+        if(accumulator[idx] > minVotes){
+          boolean bestCandidate = true;
+          for(int dPhi=-neighbourhood/2;dPhi<neighbourhood/2 + 1; dPhi++){
+            if(accPhi+dPhi<0 || accPhi+dPhi >= phiDim) continue;
+            for(int dR = -neighbourhood/2; dR<neighbourhood/2 +1;dR++){
+              if(accR+dR<0 || accR + dR>=rDim) continue;
+              int neighbourIdx = (accPhi + dPhi + 1) * (rDim + 2) + accR + dR + 1;
+              if(accumulator[idx]<accumulator[neighbourIdx]){
+                bestCandidate=false;
+                break;
+              }
+            }if(!bestCandidate) break;
           }
-        }if(!bestCandidate) break;
-      }
-      if(bestCandidate){
-        bestCandidates.add(idx);
+          if(bestCandidate){
+            bestCandidates.add(idx);
+          }
+        }
       }
     }
-  }
-}
-
- Collections.sort(bestCandidates, new HoughComparator(accumulator));
- int nLines = 4;
- for(int i=0; i<nLines;i++){
-      int accPhi = (int) (bestCandidates.get(i) / (rDim+2)) -1;
-      int accR = bestCandidates.get(i) - (accPhi +1) * (rDim+2) -1;
-      float r =(accR- (rDim-1) *0.5f) * discretizationStepsR;
-      float phi = accPhi * discretizationStepsPhi;
-      
-      retValue.add(new PVector(r,phi)); // WARNING : PVector const. takes (x,y) as args. We are dealing with serious polar coordinates here.
-      
-      int x0=0;
-      int y0=(int) (r/sin(phi));
-      int x1= (int) (r/cos(phi));
-      int y1 =0;
-      int x2 = img.width;
-      int y2 = (int) (-cos(phi) / sin(phi) *x2+r /sin(phi));
-      int y3 = img.width;
-      int x3 = (int)(-(y3-r/sin(phi)) * (sin(phi) /cos(phi)));
-      
-      stroke(204,102,0);
-      if(y0>0){
-        if(x1>0)
-          line(x0,y0,x1,y1);
-        else if(y2>0)
-           line(x0,y0,x2,y2);
-        else
-           line(x0,y0,x3,y3);
-      }
-      else {
-        if(x1>0) {
-          if(y2 >0)
-            line(x1,y1,x2,y2);
-          else
-            line(x1,y1,x3,y3);
-          }
-         else   
-         line(x2,y2,x3,y3); 
-      } 
- } drawHough(accumulator, rDim, phiDim);
-  return retValue;
- }
+    
+     Collections.sort(bestCandidates, new HoughComparator(accumulator));
+     int nLines = 4;
+     for(int i=0; i<nLines;i++){
+          int accPhi = (int) (bestCandidates.get(i) / (rDim+2)) -1;
+          int accR = bestCandidates.get(i) - (accPhi +1) * (rDim+2) -1;
+          float r =(accR- (rDim-1) *0.5f) * discretizationStepsR;
+          float phi = accPhi * discretizationStepsPhi;
+          
+          retValue.add(new PVector(r,phi)); // WARNING : PVector const. takes (x,y) as args. We are dealing with serious polar coordinates here.
+          
+          int x0=0;
+          int y0=(int) (r/sin(phi));
+          int x1= (int) (r/cos(phi));
+          int y1 =0;
+          int x2 = img.width;
+          int y2 = (int) (-cos(phi) / sin(phi) *x2+r /sin(phi));
+          int y3 = img.width;
+          int x3 = (int)(-(y3-r/sin(phi)) * (sin(phi) /cos(phi)));
+          
+          if(drawMode){
+            stroke(204,102,0);
+            if(y0>0){
+              if(x1>0)
+                line(x0,y0,x1,y1);
+              else if(y2>0)
+                 line(x0,y0,x2,y2);
+              else
+                 line(x0,y0,x3,y3);
+            } else {
+              if(x1>0) {
+                if(y2 >0)
+                  line(x1,y1,x2,y2);
+                else
+                  line(x1,y1,x3,y3);
+              } else   
+                line(x2,y2,x3,y3); 
+            } 
+            drawHough(accumulator, rDim, phiDim);
+          } 
+       }
+      return retValue;
+   }
 
 
 

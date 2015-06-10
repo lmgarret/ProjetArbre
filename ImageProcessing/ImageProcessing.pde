@@ -25,7 +25,7 @@ int width = 1500;
 int height = 325;
 ArrayList<Integer> bestCandidates=new ArrayList<Integer>();
 Capture cam;
-boolean useCamera = false;
+boolean useCamera = true;
 String currentBoardImage = "board1.jpg";
   
     //INPUT -> HUE/Brightness/Saturation thresholding -> Blurring -> Intensity thresholding ->Sobel -> HoughTransform
@@ -73,14 +73,16 @@ String currentBoardImage = "board1.jpg";
       }else{
         img = loadImage(currentBoardImage);
       }
-      img.resize(width/3,height);
+    }else{
+        img = loadImage(currentBoardImage);
+      }
+     img.resize(width/3,height);
       image(img,0,0);
       PImage intensityFilteredImg = IntensityFilter(blurr(PreFilters(img)));
       ArrayList<PVector> houghLines = hough(Sobel(img, intensityFilteredImg));
       getIntersections(houghLines);
       image(Sobel(img, intensityFilteredImg),2*width/3,0);
       drawQuads(houghLines);
-    }
   }
   
   public void drawQuads(ArrayList<PVector> lines){

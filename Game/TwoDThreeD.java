@@ -1,6 +1,9 @@
 import java.util.List;
 
 import processing.core.PVector;
+
+import java.util.Collections;
+import java.util.Comparator;
 import papaya.*;
 
 public class TwoDThreeD {
@@ -18,7 +21,9 @@ public class TwoDThreeD {
 	//static float boardSize = 255.f; // smaller Lego board
 	
 	// the 3D coordinates of the physical board corners, clockwise
-	static float [][] physicalCorners = { {-128,-128,0,1},{128,-128,0,1},{128,128,0,1},{-128,128,0,1}
+	static float [][] physicalCorners = {/*{-boardSize/2.0f,-boardSize/2.0f,0,1},{boardSize/2.0f,-boardSize/2.0f,0,1},
+                                              {boardSize/2.0f,boardSize/2.0f,0,1},{-boardSize/2.0f,boardSize/2.0f,0,1}*/
+                                                {0,0,0,1},{boardSize,0,0,1},{boardSize,boardSize,0,1},{0,boardSize,0,1}
 							// TODO:
 							// Store here the 3D coordinates of the corners of
 							// the real Lego board, in homogenous coordinates
@@ -80,11 +85,18 @@ public class TwoDThreeD {
 		float[][] projectedCorners = new float[4][3];
 		
 		for(int i=0;i<4;i++){
-                    projectedCorners[i] = Mat.multiply(invK, new float[]{points2D.get(i).x, points2D.get(i).y,points2D.get(i).z});
-		    // TODO:
-		    // store in projectedCorners the result of (K^(-1) · p), for each 
-		    // corner p found in the webcam image.
-		    // You can use Mat.multiply to multiply a matrix with a vector.
+                    // TODO:
+                    // store in projectedCorners the result of (K^(-1) · p), for each 
+                    // corner p found in the webcam image.
+                    // You can use Mat.multiply to multiply a matrix with a vector.
+                    projectedCorners[i] = Mat.multiply(invK, new float[]{points2D.get(i).x, 
+                                                                          points2D.get(i).y, 
+                                                                            1/*points2D.get(i).z*/});
+                    /*System.out.print("[");
+                    for(int j = 0; j<3; j++){
+                        System.out.print(projectedCorners[i][j]*180.0/Math.PI+",");
+                    }
+                    System.out.print("]\n");*/
 		}
 		
 		// 'A' contains the cross-product (K^(-1) · p) X P
@@ -173,4 +185,47 @@ public class TwoDThreeD {
 
 		return rot;
 	}
+
+ public static List<PVector> sortCorners(List<PVector> quad){
+    // Sort corners so that they are ordered clockwise
+    PVector a = quad. get(0);
+    PVector b = quad. get(2);
+    PVector center = new PVector((a. x+b. x)/2,(a. y+b. y)/2);
+    Collections. sort(quad, new CWComparator(center));
+    
+    // TODO:
+    // Re-order the corners so that the first one is the closest to the
+    // origin (0,0) of the image.
+    //
+    // You can use Collections.rotate to shift the corners inside the quad.
+    float minX = quad.get(0).x;
+    float minY = quad.get(0).y;
+    int index = 0;
+    for(int i = 1; i< 4; i++){
+        if(quad.get(i).x <= minX && quad.get(i).y <= minY){
+           minX = quad.get(i).x;
+           minY = quad.get(i).y;
+           index = i;
+        }
+    }
+    if(index != 0){
+      Collections.rotate(quad,-index);
+    }
+    
+    return quad;
+  }
+
+}
+
+class CWComparator implements Comparator<PVector> {
+  PVector center;
+  public CWComparator(PVector center) {
+    this. center = center;
+  }
+  @Override
+  public int compare(PVector b, PVector d) {
+    if(Math. atan2(b. y-center. y, b. x-center. x)<Math. atan2(d. y-center. y, d. x-center. x))
+        return -1;
+     else return 1;
+    }
 }
