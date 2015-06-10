@@ -27,22 +27,24 @@ PShape tree;
 void setup(){
   size(700, 700, P3D);
   if(imageProcessingDisplayMode){
-    String[] cameras = Capture.list();
-    if (cameras.length == 0) {
-       println("There are no cameras available for capture.");
-       exit();
-     } else {
-       println("Available cameras:");
-       for (int i = 0; i < cameras.length; i++) {
-         println(cameras[i]);
-       }
-      
-       // The camera can be initialized directly using an 
-       // element from the array returned by list():
-       cam = new Capture(this, cameras[0]);
-       cam.start();     
-     }  
-     while(!cam.available() && forceCameraUse){cam.read();}
+    if(useCamera){
+        String[] cameras = Capture.list();
+        if (cameras.length == 0) {
+           println("There are no cameras available for capture.");
+           exit();
+         } else {
+           println("Available cameras:");
+           for (int i = 0; i < cameras.length; i++) {
+             println(cameras[i]);
+           }
+          
+           // The camera can be initialized directly using an 
+           // element from the array returned by list():
+           cam = new Capture(this, cameras[0]);
+           cam.start();     
+         }  
+         while(!cam.available() && forceCameraUse){cam.read();}
+     }
      calculate2D3DAngles();
   }else{
     //GAME MODE
@@ -63,6 +65,8 @@ void setup(){
 void draw(){
   if(imageProcessingDisplayMode && useCamera){
       calculate2D3DAngles();
+  }else if(imageProcessingDisplayMode && !useCamera){
+  
   }else{
     //GAME MODE
     if(bestScore<userPoints){
