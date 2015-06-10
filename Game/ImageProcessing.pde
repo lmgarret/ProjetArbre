@@ -25,8 +25,9 @@ PImage result;
 //int height = 325;
 ArrayList<Integer> bestCandidates=new ArrayList<Integer>();
 Capture cam;
-boolean useCamera = false;
-boolean drawMode = true;
+boolean useCamera = true;
+boolean forceCameraUse = useCamera;
+boolean imageProcessingDisplayMode = true;
 String currentBoardImage = "data/Images/board1.jpg";
   
     //INPUT -> HUE/Brightness/Saturation thresholding -> Blurring -> Intensity thresholding ->Sobel -> HoughTransform
@@ -85,9 +86,18 @@ String currentBoardImage = "data/Images/board1.jpg";
     }
   }*/
   public void calculate2D3DAngles(){
-    img = loadImage(currentBoardImage);
+    if(useCamera){
+      if (cam.available() == true) {
+        cam.read();
+        img = cam.get();
+      }else{
+           img = loadImage(currentBoardImage);
+      }
+    }else{
+      img = loadImage(currentBoardImage);
+    }
 
-    if(drawMode){
+    if(imageProcessingDisplayMode){
       image(img,0,0);
     }
     PImage intensityFilteredImg = IntensityFilter(blurr(PreFilters(img)));
@@ -122,7 +132,7 @@ String currentBoardImage = "data/Images/board1.jpg";
        }
     }
     
-    if(drawMode){
+    if(imageProcessingDisplayMode){
       drawQuads(quadsFiltered, lines);
     }
     return quadsFiltered;
@@ -303,7 +313,7 @@ String currentBoardImage = "data/Images/board1.jpg";
       float x = (float)((R2*Math.sin(P1) - R1*Math.sin(P2))/d);
       float y = (float)((-1*R2*Math.cos(P1)+R1*Math.cos(P2))/d);
       intersections.add(new PVector((int)x,(int)y));
-      if(drawMode){
+      if(imageProcessingDisplayMode){
         fill(255,128,0);
         ellipse(x,y,10,10);
       }
@@ -381,7 +391,7 @@ String currentBoardImage = "data/Images/board1.jpg";
           int y3 = img.width;
           int x3 = (int)(-(y3-r/sin(phi)) * (sin(phi) /cos(phi)));
           
-          if(drawMode){
+          if(imageProcessingDisplayMode){
             stroke(204,102,0);
             if(y0>0){
               if(x1>0)
