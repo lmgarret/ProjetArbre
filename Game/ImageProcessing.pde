@@ -90,23 +90,26 @@ String currentBoardImage = "data/Images/board1.jpg";
       if (cam.available() == true) {
         cam.read();
         img = cam.get();
+        
+        if(imageProcessingDisplayMode){
+          image(img,0,0);
+        }
+
       }else{
            img = loadImage(currentBoardImage);
       }
     }else{
       img = loadImage(currentBoardImage);
     }
-
-    if(imageProcessingDisplayMode){
-      image(img,0,0);
-    }
     PImage intensityFilteredImg = IntensityFilter(blurr(PreFilters(img)));
     ArrayList<PVector> houghLines = hough(Sobel(img, intensityFilteredImg));
     List<int[]> quads = getQuads(houghLines);
     ArrayList<PVector> intersections = getIntersections(houghLines);    
+    if(!intersections.isEmpty()){
     TwoDThreeD tdtd = new TwoDThreeD(img.width, img.height);
     PVector rotationVector = tdtd.get3DRotations(TwoDThreeD.sortCorners(intersections));
     println(currentBoardImage+": rx="+rotationVector.x*180.0/Math.PI+", ry="+rotationVector.y*180.0/Math.PI+", rz="+rotationVector.z*180.0/Math.PI);
+    }
   }
   
   public List<int[]> getQuads(ArrayList<PVector> lines){
@@ -325,6 +328,8 @@ String currentBoardImage = "data/Images/board1.jpg";
   
   public ArrayList<PVector> hough(PImage img) {
      ArrayList<PVector> retValue = new ArrayList<PVector>();
+    // bestCandidates.clear();
+     
      float discretizationStepsPhi =0.005f;
      float discretizationStepsR = 2.5f;
      int phiDim = (int) (Math.PI / discretizationStepsPhi);
@@ -374,7 +379,7 @@ String currentBoardImage = "data/Images/board1.jpg";
     
      Collections.sort(bestCandidates, new HoughComparator(accumulator));
      int nLines = 4;
-     for(int i=0; i<nLines;i++){
+     for(int i=0; i<nLines && !bestCandidates.isEmpty();i++){
           int accPhi = (int) (bestCandidates.get(i) / (rDim+2)) -1;
           int accR = bestCandidates.get(i) - (accPhi +1) * (rDim+2) -1;
           float r =(accR- (rDim-1) *0.5f) * discretizationStepsR;

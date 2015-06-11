@@ -43,7 +43,7 @@ void setup(){
            cam = new Capture(this, cameras[0]);
            cam.start();     
          }  
-         while(!cam.available() && forceCameraUse){cam.read();}
+         //while(!cam.available() && forceCameraUse){cam.read();}
      }
      calculate2D3DAngles();
   }else{
