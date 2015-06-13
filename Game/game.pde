@@ -61,11 +61,15 @@ void setup(){
     bartChartSurface = createGraphics(width-(topViewSurface.width+scoresSurface.width+2*10)-20, height/5 - 20, P2D);
     mover = new Mover();
     cylinder.init();
+    
+    mov = new Movie(this, currentVideo); //Put the video in the same directory
+    mov. loop();
   }
  /* */
 }
 
 void draw(){
+  
   if(imageProcessingDisplayMode && useCamera){
       calculate2D3DAngles();
   }else if(imageProcessingDisplayMode && !useCamera && !useVideo){
@@ -108,12 +112,17 @@ void draw(){
       if(c.position.y < boxWidth/2 && c.position.y > -boxWidth/2 && c.position.x < boxWidth/2 && c.position.x > -boxWidth/2)
        c.display(gameGraphics); 
     }
+   
     gameGraphics.endDraw();
     image(gameGraphics,0,0);
-    
     drawDataVizualSurface();
+    if(mode == 0 ){
+    calculate2D3DAngles();
+    PImage smallImg = mov.get();
+    smallImg.resize(640/4,480/4);
+    image(smallImg,0,0);
   }
-  
+  }
 }
 
 

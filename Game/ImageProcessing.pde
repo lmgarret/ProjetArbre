@@ -29,7 +29,7 @@ Movie mov;
 boolean useCamera = false;
 boolean useVideo = true;
 boolean forceCameraUse = useCamera;
-boolean imageProcessingDisplayMode = true;
+boolean imageProcessingDisplayMode = false;
 String currentImage = "data/Images/board1.jpg";
 String currentVideo = sketchPath("Video/testvideo.mp4");
 
@@ -57,7 +57,7 @@ String currentVideo = sketchPath("Video/testvideo.mp4");
     }else{
       img = loadImage(currentImage);
     }
-    image(img,0,0);
+    //image(img,0,0);
     PImage intensityFilteredImg = IntensityFilter(blurr(PreFilters(img)));
     ArrayList<PVector> houghLines = hough(Sobel(img, intensityFilteredImg));
     List<int[]> quads = getQuads(houghLines);
@@ -66,6 +66,10 @@ String currentVideo = sketchPath("Video/testvideo.mp4");
     TwoDThreeD tdtd = new TwoDThreeD(img.width, img.height);
     PVector rotationVector = tdtd.get3DRotations(TwoDThreeD.sortCorners(intersections));
     println(currentImage+": rx="+rotationVector.x*180.0/Math.PI+", ry="+rotationVector.y*180.0/Math.PI+", rz="+rotationVector.z*180.0/Math.PI);
+    rotX = rotationVector.x;
+    rotY= rotationVector.y;
+    rotZ = rotationVector.z;
+    
     }
   }
   
@@ -175,7 +179,7 @@ String currentVideo = sketchPath("Video/testvideo.mp4");
    int pixelSat;
    float minColor = 100; 
    float maxColor = 140; 
-   float minBright = 20; 
+   float minBright = 30; 
    float maxBright = 150; 
    float minSat =80; 
    float maxSat = 255;

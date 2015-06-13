@@ -2,6 +2,7 @@ void keyPressed() {
   if (key == CODED) {
     if(keyCode == SHIFT){
       mode = 1;
+      mov.pause();
     }if (keyCode == LEFT) {
       rotY -= PI*speed/128;
     } else if (keyCode == RIGHT) {
@@ -14,6 +15,7 @@ void keyPressed() {
 void keyReleased(){
    if(key==CODED){
     if(keyCode == SHIFT){
+     mov.play();
      mode=0;
     }
    } 
@@ -27,7 +29,7 @@ void mouseClicked(){
    cylinder.init();
  }
 }
-void mouseDragged() 
+/*void mouseDragged() 
 {
   if(mode == 0){
     rotX = map(mouseX, 0, width, -PI/3, PI/3)*speed;
@@ -44,7 +46,7 @@ void mouseDragged()
        rotZ = -PI/3;
     }
   }
-}
+}*/
 void mouseWheel(MouseEvent event) {
   float e = event.getCount();
   if(e>0){ //mouse wheel down

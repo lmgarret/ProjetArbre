@@ -91,7 +91,7 @@ public class TwoDThreeD {
                     // You can use Mat.multiply to multiply a matrix with a vector.
                     projectedCorners[i] = Mat.multiply(invK, new float[]{points2D.get(i).x, 
                                                                           points2D.get(i).y, 
-                                                                            1/*points2D.get(i).z*/});
+                                                                            1});
                     /*System.out.print("[");
                     for(int j = 0; j<3; j++){
                         System.out.print(projectedCorners[i][j]*180.0/Math.PI+",");
@@ -209,7 +209,7 @@ public class TwoDThreeD {
         }
     }
     if(index != 0){
-      Collections.rotate(quad,-index);
+      Collections.rotate(quad,-index-1);
     }
     
     return quad;
