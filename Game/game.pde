@@ -44,6 +44,9 @@ void setup(){
            cam.start();     
          }  
          //while(!cam.available() && forceCameraUse){cam.read();}
+     }else if(useVideo){
+        mov = new Movie(this, currentVideo); //Put the video in the same directory
+        mov. loop();
      }
      calculate2D3DAngles();
   }else{
@@ -65,8 +68,10 @@ void setup(){
 void draw(){
   if(imageProcessingDisplayMode && useCamera){
       calculate2D3DAngles();
-  }else if(imageProcessingDisplayMode && !useCamera){
-  
+  }else if(imageProcessingDisplayMode && !useCamera && !useVideo){
+    //Static image, we don't do anything
+  }else if(imageProcessingDisplayMode && useVideo){
+      calculate2D3DAngles();
   }else{
     //GAME MODE
     if(bestScore<userPoints){

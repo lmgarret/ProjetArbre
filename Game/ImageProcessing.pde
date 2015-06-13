@@ -25,66 +25,16 @@ PImage result;
 //int height = 325;
 ArrayList<Integer> bestCandidates=new ArrayList<Integer>();
 Capture cam;
-boolean useCamera = true;
+Movie mov;
+boolean useCamera = false;
+boolean useVideo = true;
 boolean forceCameraUse = useCamera;
 boolean imageProcessingDisplayMode = true;
-String currentBoardImage = "data/Images/board1.jpg";
-  
+String currentImage = "data/Images/board1.jpg";
+String currentVideo = sketchPath("Video/testvideo.mp4");
+
     //INPUT -> HUE/Brightness/Saturation thresholding -> Blurring -> Intensity thresholding ->Sobel -> HoughTransform
     
- /* public void setup(){
-    size(width,height);
-    if(useCamera){
-      String[] cameras = Capture.list();
-    
-        if (cameras.length == 0) {
-          println("There are no cameras available for capture.");
-          exit();
-        } else {
-          println("Available cameras:");
-          for (int i = 0; i < cameras.length; i++) {
-            println(cameras[i]);
-          }
-      
-        // The camera can be initialized directly using an 
-        // element from the array returned by list():
-        cam = new Capture(this, cameras[0]);
-        cam.start();     
-      }      
-      if (cam.available() == true) {
-        cam.read();
-        img = cam.get();
-      }else{
-           img = loadImage(currentBoardImage);
-      }
-    }else{
-      img = loadImage(currentBoardImage);
-    }
-    img.resize(width/3,height);
-    image(img,0,0);
-    PImage intensityFilteredImg = IntensityFilter(blurr(PreFilters(img)));
-    ArrayList<PVector> houghLines = hough(Sobel(img, intensityFilteredImg));
-    getIntersections(houghLines);
-    image(Sobel(img, intensityFilteredImg),2*width/3,0);
-    drawQuads(houghLines);
-  }
-  public void draw(){
-    if(useCamera){
-      if (cam.available() == true) {
-        cam.read();
-        img = cam.get();
-      }else{
-        img = loadImage(currentBoardImage);
-      }
-      img.resize(width/3,height);
-      image(img,0,0);
-      PImage intensityFilteredImg = IntensityFilter(blurr(PreFilters(img)));
-      ArrayList<PVector> houghLines = hough(Sobel(img, intensityFilteredImg));
-      getIntersections(houghLines);
-      image(Sobel(img, intensityFilteredImg),2*width/3,0);
-      drawQuads(houghLines);
-    }
-  }*/
   public void calculate2D3DAngles(){
     if(useCamera){
       if (cam.available() == true) {
@@ -96,11 +46,18 @@ String currentBoardImage = "data/Images/board1.jpg";
         }
 
       }else{
-           img = loadImage(currentBoardImage);
+           img = loadImage(currentImage);
       }
+    }else if(useVideo){
+      mov.read();
+      img = mov.get();    
+      if(imageProcessingDisplayMode){
+          image(img,0,0);
+        }
     }else{
-      img = loadImage(currentBoardImage);
+      img = loadImage(currentImage);
     }
+    image(img,0,0);
     PImage intensityFilteredImg = IntensityFilter(blurr(PreFilters(img)));
     ArrayList<PVector> houghLines = hough(Sobel(img, intensityFilteredImg));
     List<int[]> quads = getQuads(houghLines);
@@ -108,7 +65,7 @@ String currentBoardImage = "data/Images/board1.jpg";
     if(!intersections.isEmpty()){
     TwoDThreeD tdtd = new TwoDThreeD(img.width, img.height);
     PVector rotationVector = tdtd.get3DRotations(TwoDThreeD.sortCorners(intersections));
-    println(currentBoardImage+": rx="+rotationVector.x*180.0/Math.PI+", ry="+rotationVector.y*180.0/Math.PI+", rz="+rotationVector.z*180.0/Math.PI);
+    println(currentImage+": rx="+rotationVector.x*180.0/Math.PI+", ry="+rotationVector.y*180.0/Math.PI+", rz="+rotationVector.z*180.0/Math.PI);
     }
   }
   
@@ -328,7 +285,7 @@ String currentBoardImage = "data/Images/board1.jpg";
   
   public ArrayList<PVector> hough(PImage img) {
      ArrayList<PVector> retValue = new ArrayList<PVector>();
-    // bestCandidates.clear();
+     bestCandidates.clear();
      
      float discretizationStepsPhi =0.005f;
      float discretizationStepsR = 2.5f;
@@ -379,7 +336,7 @@ String currentBoardImage = "data/Images/board1.jpg";
     
      Collections.sort(bestCandidates, new HoughComparator(accumulator));
      int nLines = 4;
-     for(int i=0; i<nLines && !bestCandidates.isEmpty();i++){
+     for(int i=0; i<nLines && bestCandidates.size() >=nLines;i++){
           int accPhi = (int) (bestCandidates.get(i) / (rDim+2)) -1;
           int accR = bestCandidates.get(i) - (accPhi +1) * (rDim+2) -1;
           float r =(accR- (rDim-1) *0.5f) * discretizationStepsR;
