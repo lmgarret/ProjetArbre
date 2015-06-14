@@ -26,23 +26,28 @@ PImage result;
 ArrayList<Integer> bestCandidates=new ArrayList<Integer>();
 Capture cam;
 Movie mov;
-boolean useCamera = true;
-boolean useVideo = false;
-boolean forceCameraUse = useCamera;
-boolean imageProcessingDisplayMode = false;
+boolean useCamera = false;
+boolean useVideo = true;
+boolean imgProcessOnly = false;
+boolean showInput = true;
 String currentImage = "data/Images/board1.jpg";
 String currentVideo = sketchPath("Video/testvideo.mp4");
 
     //INPUT -> HUE/Brightness/Saturation thresholding -> Blurring -> Intensity thresholding ->Sobel -> HoughTransform
     
   public void calculate2D3DAngles(){
+    videoGraphics.beginDraw();
+    //videoGraphics.noStroke();
+    if(!imgProcessOnly){
+      videoGraphics.scale(1/4.0);
+    }
     if(useCamera){
       if (cam.available() == true) {
         cam.read();
         img = cam.get();
         
-        if(imageProcessingDisplayMode){
-          image(img,0,0);
+        if(showInput){
+          videoGraphics.image(img,0,0);
         }
 
       }else{
@@ -51,8 +56,8 @@ String currentVideo = sketchPath("Video/testvideo.mp4");
     }else if(useVideo){
       mov.read();
       img = mov.get();    
-      if(imageProcessingDisplayMode){
-          image(img,0,0);
+      if(showInput){
+          videoGraphics.image(img,0,0);
         }
     }else{
       img = loadImage(currentImage);
@@ -71,6 +76,12 @@ String currentVideo = sketchPath("Video/testvideo.mp4");
     rotZ = rotationVector.z;
     
     }
+    if(!imgProcessOnly){
+      videoGraphics.scale(4.0);
+    }
+    videoGraphics.endDraw();
+    image(videoGraphics,0,0);
+
   }
   
   public List<int[]> getQuads(ArrayList<PVector> lines){
@@ -96,7 +107,7 @@ String currentVideo = sketchPath("Video/testvideo.mp4");
        }
     }
     
-    if(imageProcessingDisplayMode){
+    if(showInput){
       drawQuads(quadsFiltered, lines);
     }
     return quadsFiltered;
@@ -119,10 +130,10 @@ String currentVideo = sketchPath("Video/testvideo.mp4");
 
          // Choose a random, semi-transparent colour
          Random random = new Random();
-         fill(color(min(255, random. nextInt(300)),
+         videoGraphics.fill(color(min(255, random. nextInt(300)),
          min(255, random. nextInt(300)),
          min(255, random. nextInt(300)), 50));
-         quad(c12. x, c12. y, c23. x, c23. y, c34. x, c34. y, c41. x, c41. y);
+         videoGraphics.quad(c12. x, c12. y, c23. x, c23. y, c34. x, c34. y, c41. x, c41. y);
     }
    // translate(-2*width/3.0,0);
   }
@@ -143,7 +154,7 @@ String currentVideo = sketchPath("Video/testvideo.mp4");
    }
    houghImg.updatePixels();
    houghImg.resize(width/3,325);
-   image(houghImg,width/3,0);
+   //videoGraphics.image(houghImg,width/3,0);
   }
   
 
@@ -277,9 +288,9 @@ String currentVideo = sketchPath("Video/testvideo.mp4");
       float x = (float)((R2*Math.sin(P1) - R1*Math.sin(P2))/d);
       float y = (float)((-1*R2*Math.cos(P1)+R1*Math.cos(P2))/d);
       intersections.add(new PVector((int)x,(int)y));
-      if(imageProcessingDisplayMode){
-        fill(255,128,0);
-        ellipse(x,y,10,10);
+      if(showInput){
+        videoGraphics.fill(255,128,0);
+        videoGraphics.ellipse(x,y,10,10);
       }
     }
   }
@@ -357,23 +368,23 @@ String currentVideo = sketchPath("Video/testvideo.mp4");
           int y3 = img.width;
           int x3 = (int)(-(y3-r/sin(phi)) * (sin(phi) /cos(phi)));
           
-          if(imageProcessingDisplayMode){
-            stroke(204,102,0);
+          if(showInput){
+            videoGraphics.stroke(204,102,0);
             if(y0>0){
               if(x1>0)
-                line(x0,y0,x1,y1);
+                videoGraphics.line(x0,y0,x1,y1);
               else if(y2>0)
-                 line(x0,y0,x2,y2);
+                 videoGraphics.line(x0,y0,x2,y2);
               else
-                 line(x0,y0,x3,y3);
+                 videoGraphics.line(x0,y0,x3,y3);
             } else {
               if(x1>0) {
                 if(y2 >0)
-                  line(x1,y1,x2,y2);
+                  videoGraphics.line(x1,y1,x2,y2);
                 else
-                  line(x1,y1,x3,y3);
+                  videoGraphics.line(x1,y1,x3,y3);
               } else   
-                line(x2,y2,x3,y3); 
+                videoGraphics.line(x2,y2,x3,y3); 
             } 
             drawHough(accumulator, rDim, phiDim);
           } 

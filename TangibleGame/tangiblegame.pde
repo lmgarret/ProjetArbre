@@ -10,6 +10,7 @@ int boxWidth = 300;
 PGraphics dataBackgroundSurface;
 PGraphics topViewSurface;
 PGraphics gameGraphics;
+PGraphics videoGraphics;
 PGraphics scoresSurface;
 PGraphics bartChartSurface;
 
@@ -26,6 +27,7 @@ PShape tree;
 
 void setup(){
   size(700, 700, P3D);
+  PImage firstInputImage = null;
   if(useCamera){
         String[] cameras = Capture.list();
         if (cameras.length == 0) {
@@ -40,16 +42,23 @@ void setup(){
            // The camera can be initialized directly using an 
            // element from the array returned by list():
            cam = new Capture(this, cameras[0]);
-           cam.start();     
+           cam.start();
+           firstInputImage = cam.get();
          }  
          //while(!cam.available() && forceCameraUse){cam.read();}
      }else if(useVideo){
         mov = new Movie(this, currentVideo); //Put the video in the same directory
         mov. loop();
+        firstInputImage = mov.get();
      }
-  if(imageProcessingDisplayMode){
+  if(imgProcessOnly){
+     videoGraphics = createGraphics(640,480, P2D);
+     //println(mov.width+" "+mov.height);
      calculate2D3DAngles();
   }else{
+    videoGraphics = createGraphics(160,120, P2D);
+     //println(mov.width+" "+mov.height);
+     calculate2D3DAngles();
     //GAME MODE
     noStroke();
     tree = loadShape("data/3DModels/Obj/tree_no_tex.obj");
@@ -67,12 +76,10 @@ void setup(){
 
 void draw(){
   
-  if(imageProcessingDisplayMode && useCamera){
+  if(imgProcessOnly && (useCamera || useVideo)){
       calculate2D3DAngles();
-  }else if(imageProcessingDisplayMode && !useCamera && !useVideo){
+  }else if(imgProcessOnly && !useCamera && !useVideo){
     //Static image, we don't do anything
-  }else if(imageProcessingDisplayMode && useVideo){
-      calculate2D3DAngles();
   }else{
     //GAME MODE
     if(bestScore<userPoints){
@@ -109,21 +116,21 @@ void draw(){
       if(c.position.y < boxWidth/2 && c.position.y > -boxWidth/2 && c.position.x < boxWidth/2 && c.position.x > -boxWidth/2)
        c.display(gameGraphics); 
     }
-   
     gameGraphics.endDraw();
     image(gameGraphics,0,0);
     drawDataVizualSurface();
     if(mode == 0 ){
       calculate2D3DAngles();
-      PImage smallImg = null;
+      /*PImage smallImg = null;
       if(useVideo){
        smallImg = mov.get();
       }else if(useCamera){
        smallImg = cam.get();
       }
       smallImg.resize(640/4,480/4);
-      image(smallImg,0,0);
+      image(smallImg,0,0);*/
   }
+
   }
 }
 
